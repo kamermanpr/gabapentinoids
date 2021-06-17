@@ -16,7 +16,6 @@ library(readr)
 ###############################################
 #   Fetch the data from openprescribing.net   #
 ###############################################
-
 #-- OpenPrescribing API details --#
 # API details can be found here: https://openprescribing.net/api/
 # Drug codes can be obtained here: https://openprescribing.net/analyse/
@@ -44,7 +43,6 @@ gabapentin <- gabapentin_epi %>%
 #############
 #   Clean   #
 #############
-
 #-- Pregabalin --#
 pregabalin_clean <- pregabalin %>% 
     # Select columns
@@ -70,7 +68,6 @@ gabapentin_clean <- gabapentin %>%
 ####################
 #   Save to file   #
 ####################
-
 #-- Create directory for saved files --#
 if(!dir.exists('data-clean')) {
     dir.create('data-clean')
@@ -78,9 +75,32 @@ if(!dir.exists('data-clean')) {
 
 #-- Save pregabalin --#
 write_csv(x = pregabalin_clean,
-          file = 'data-clean/pregabalin.csv')
+          file = 'data-clean/analysis-set_pregabalin.csv')
 
 #-- Save gabapentin --#
 write_csv(x = gabapentin_clean,
-          file = 'data-clean/gabapentin.csv')
+          file = 'data-clean/analysis-set_gabapentin_.csv')
 
+##############################################
+#   Full datasets downloaded on 2021-06-17   #
+##############################################
+#-- Pregabalin --#
+pregabalin %>% 
+    # Select columns
+    select(date, items) %>% 
+    # Write to file
+    write_csv(file = 'data-clean/full-record_pregabalin.csv')
+
+#-- Gabapentin --#
+gabapentin %>% 
+    # Select columns
+    select(date, items.x, items.y) %>% 
+    # Sum items columns from items.x (antiepileptic) and items.y (neuropathic pain)
+    rowwise() %>% 
+    mutate(items = sum(c_across(cols = starts_with('items')), na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    # Select columns
+    select(date, items) %>% 
+    # Write to file
+    write_csv(file = 'data-clean/full-record_gabapentin.csv')
+    
