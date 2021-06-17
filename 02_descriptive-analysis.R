@@ -12,7 +12,6 @@ library(dplyr)
 library(lubridate)
 library(skimr)
 library(ggplot2)
-library(ggthemes)
 
 ###############
 #   Options   #
@@ -78,19 +77,16 @@ gabapentin_2 %>%
 # Plot
 plot_gabapentin <- ggplot(data = gabapentin_2) +
     aes(x = factor(year),
-        y = items,
-        colour = factor(year),
-        fill = factor(year)) +
-    geom_boxplot(alpha = 0.5, 
+        y = items) +
+    geom_boxplot(fill = '#000000',
+                 alpha = 0.3, 
                  outlier.size = -Inf) +
     geom_point(size = 3,
                position = position_jitter(height = 0,
                                           width = 0.2)) +
     labs(title = 'Gabapentin',
          x = 'Year',
-         y = 'Number of prescribed items') +
-    scale_fill_tableau() +
-    scale_colour_tableau()
+         y = 'Number of prescribed items') 
 
 plot_gabapentin
 
@@ -109,23 +105,54 @@ pregabalin_2 %>%
 # Plot
 plot_pregabalin <- ggplot(data = pregabalin_2) +
     aes(x = factor(year),
-        y = items,
-        colour = factor(year),
-        fill = factor(year)) +
-    geom_boxplot(alpha = 0.5, 
+        y = items) +
+    geom_boxplot(fill = '#000000',
+                 alpha = 0.3, 
                  outlier.size = -Inf) +
     geom_point(size = 3,
                position = position_jitter(height = 0,
                                           width = 0.2)) +
     labs(title = 'Pregabalin',
          x = 'Year',
-         y = 'Number of prescribed items') +
-    scale_fill_tableau() +
-    scale_colour_tableau()
+         y = 'Number of prescribed items') 
 
 plot_pregabalin
 
 ggsave(filename = 'figures/02_pregabalin_2016-to-2021.png',
        plot = plot_pregabalin,
        height = 6,
+       width = 8)
+
+########################
+#   Publication plot   #
+########################
+#-- Combine data --#
+gabapentin_3 <- gabapentin_2 %>% 
+    mutate(drug = 'Gabapentin')
+
+pregabalin_3 <- pregabalin_2 %>% 
+    mutate(drug = 'Pregabalin')
+
+combined <- bind_rows(gabapentin_3, pregabalin_3)
+
+plot_combined <- ggplot(data = combined) +
+    aes(x = factor(year),
+        y = items) +
+    geom_boxplot(fill = '#000000',
+                 alpha = 0.3, 
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(height = 0,
+                                          width = 0.2)) +
+    labs(x = 'Year',
+         y = 'Number of prescribed items') +
+    theme(strip.text = element_text(hjust = 0,
+                                    face = 'bold')) +
+    facet_wrap(~drug, ncol = 1)
+
+plot_combined
+
+ggsave(filename = 'figures/03_pregabalin-and-gabapentin_2016-to-2021.png',
+       plot = plot_combined,
+       height = 11,
        width = 8)
