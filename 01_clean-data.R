@@ -79,7 +79,7 @@ write_csv(x = pregabalin_clean,
 
 #-- Save gabapentin --#
 write_csv(x = gabapentin_clean,
-          file = 'data-clean/analysis-set_gabapentin_.csv')
+          file = 'data-clean/analysis-set_gabapentin.csv')
 
 ##############################################
 #   Full datasets downloaded on 2021-06-17   #
