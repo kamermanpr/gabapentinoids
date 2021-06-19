@@ -180,7 +180,7 @@ write_csv(x = gabapentin_ccg_clean,
           file = 'data-clean/analysis-set_gabapentin_ccg.csv')
 
 ##############################################
-#   Full datasets downloaded on 2021-06-17   #
+#   Full datasets downloaded on 2021-06-18   #
 ##############################################
 #-- Pregabalin --#
 pregabalin_ccg %>% 
