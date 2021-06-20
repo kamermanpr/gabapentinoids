@@ -30,10 +30,19 @@ pregabalin_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?co
 pregabalin_225_tab <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEAAAZAZ&format=csv') 
 pregabalin_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEAAAGAG&format=csv') 
 pregabalin_300_tab <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEAAAWAW&format=csv') 
+lyrica_25_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAAAA&format=csv')
+lyrica_50_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBABAB&format=csv')
+lyrica_75_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBACAC&format=csv')
+lyrica_100_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBADAD&format=csv')
+lyrica_150_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAEAE&format=csv')
+lyrica_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAFAF&format=csv')
+lyrica_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAHAI&format=csv')
+lyrica_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAGAG&format=csv')
 
 #-- Process data by dose --#
 # 25mg data
 pregabalin_25 <- left_join(pregabalin_25_cap, pregabalin_25_tab, by = 'date') %>% 
+    left_join(lyrica_25_cap, by = 'date') %>%  
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_25 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -47,6 +56,7 @@ pregabalin_25 <- left_join(pregabalin_25_cap, pregabalin_25_tab, by = 'date') %>
 
 # 50mg data
 pregabalin_50 <- left_join(pregabalin_50_cap, pregabalin_50_tab, by = 'date') %>% 
+    left_join(lyrica_50_cap, by = 'date') %>% 
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_50 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -60,6 +70,7 @@ pregabalin_50 <- left_join(pregabalin_50_cap, pregabalin_50_tab, by = 'date') %>
 
 # 75mg data
 pregabalin_75 <- left_join(pregabalin_75_cap, pregabalin_75_tab, by = 'date') %>% 
+    left_join(lyrica_75_cap, by = 'date') %>%  
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_75 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -73,6 +84,7 @@ pregabalin_75 <- left_join(pregabalin_75_cap, pregabalin_75_tab, by = 'date') %>
 
 # 100mg data
 pregabalin_100 <- left_join(pregabalin_100_cap, pregabalin_100_tab, by = 'date') %>% 
+    left_join(lyrica_100_cap, by = 'date') %>%  
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_100 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -86,6 +98,7 @@ pregabalin_100 <- left_join(pregabalin_100_cap, pregabalin_100_tab, by = 'date')
 
 # 150mg data
 pregabalin_150 <- left_join(pregabalin_150_cap, pregabalin_150_tab, by = 'date') %>% 
+    left_join(lyrica_150_cap, by = 'date') %>% 
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_150 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -99,6 +112,7 @@ pregabalin_150 <- left_join(pregabalin_150_cap, pregabalin_150_tab, by = 'date')
 
 # 200mg data
 pregabalin_200 <- left_join(pregabalin_200_cap, pregabalin_200_tab, by = 'date') %>% 
+    left_join(lyrica_200_cap, by = 'date') %>% 
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_200 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -112,6 +126,7 @@ pregabalin_200 <- left_join(pregabalin_200_cap, pregabalin_200_tab, by = 'date')
 
 # 225mg data
 pregabalin_225 <- left_join(pregabalin_225_cap, pregabalin_225_tab, by = 'date') %>% 
+    left_join(lyrica_225_cap, by = 'date') %>% 
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_225 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
@@ -125,6 +140,7 @@ pregabalin_225 <- left_join(pregabalin_225_cap, pregabalin_225_tab, by = 'date')
 
 # 300mg data
 pregabalin_300 <- left_join(pregabalin_300_cap, pregabalin_300_tab, by = 'date') %>% 
+    left_join(lyrica_300_cap, by = 'date') %>% 
     rowwise() %>% 
     # Sum items
     mutate(prescriptions_300 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
