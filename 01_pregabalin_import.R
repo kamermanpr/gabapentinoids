@@ -39,7 +39,96 @@ lyrica_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0
 lyrica_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAHAI&format=csv')
 lyrica_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAGAG&format=csv')
 
+#-- Save original data --#
+if(!dir.exists('data-original')) {
+    dir.create('data-original')
+}
+
+# 25mg data
+write_csv(x = pregabalin_25_cap,
+          file = 'data-original/pregabalin_25_cap.csv')
+
+write_csv(x = pregabalin_25_tab,
+          file = 'data-original/pregabalin_25_tab.csv')
+
+write_csv(x = lyrica_25_cap,
+          file = 'data-original/lyrica_25_cap.csv')
+
+# 50mg data
+write_csv(x = pregabalin_50_cap,
+          file = 'data-original/pregabalin_50_cap.csv')
+
+write_csv(x = pregabalin_50_tab,
+          file = 'data-original/pregabalin_50_tab.csv')
+
+write_csv(x = lyrica_50_cap,
+          file = 'data-original/lyrica_50_cap.csv')
+
+# 75mg data
+write_csv(x = pregabalin_75_cap,
+          file = 'data-original/pregabalin_75_cap.csv')
+
+write_csv(x = pregabalin_75_tab,
+          file = 'data-original/pregabalin_75_tab.csv')
+
+write_csv(x = lyrica_75_cap,
+          file = 'data-original/lyrica_75_cap.csv')
+
+# 100mg
+write_csv(x = pregabalin_100_cap,
+          file = 'data-original/pregabalin_100_cap.csv')
+
+write_csv(x = pregabalin_100_tab,
+          file = 'data-original/pregabalin_100_tab.csv')
+
+write_csv(x = lyrica_100_cap,
+          file = 'data-original/lyrica_100_cap.csv')
+
+# 150mg
+write_csv(x = pregabalin_150_cap,
+          file = 'data-original/pregabalin_150_cap.csv')
+
+write_csv(x = pregabalin_150_tab,
+          file = 'data-original/pregabalin_150_tab.csv')
+
+write_csv(x = lyrica_150_cap,
+          file = 'data-original/lyrica_150_cap.csv')
+
+# 200mg
+write_csv(x = pregabalin_200_cap,
+          file = 'data-original/pregabalin_200_cap.csv')
+
+write_csv(x = pregabalin_200_tab,
+          file = 'data-original/pregabalin_200_tab.csv')
+
+write_csv(x = lyrica_200_cap,
+          file = 'data-original/lyrica_200_cap.csv')
+
+# 225mg
+write_csv(x = pregabalin_225_cap,
+          file = 'data-original/pregabalin_225_cap.csv')
+
+write_csv(x = pregabalin_225_tab,
+          file = 'data-original/pregabalin_225_tab.csv')
+
+write_csv(x = lyrica_225_cap,
+          file = 'data-original/lyrica_225_cap.csv')
+
+# 300mg
+write_csv(x = pregabalin_300_cap,
+          file = 'data-original/pregabalin_300_cap.csv')
+
+write_csv(x = pregabalin_300_tab,
+          file = 'data-original/pregabalin_300_tab.csv')
+
+write_csv(x = lyrica_300_cap,
+          file = 'data-original/lyrica_300_cap.csv')
+
 #-- Process data by dose --#
+if(!dir.exists('data-clean')) {
+    dir.create('data-clean')
+}
+
 # 25mg data
 pregabalin_25 <- left_join(pregabalin_25_cap, pregabalin_25_tab, by = 'date') %>% 
     left_join(lyrica_25_cap, by = 'date') %>%  
@@ -186,3 +275,4 @@ pregabalin_totals %>%
 #-- Save full dataset --#
 pregabalin_totals %>% 
     write_csv(file = 'data-clean/pregabalin_full-record.csv')
+
