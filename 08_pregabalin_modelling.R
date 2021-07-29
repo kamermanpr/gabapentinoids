@@ -364,7 +364,7 @@ publication_plot <- publication_prescription_simple +
     plot_layout(ncol = 2, byrow = FALSE) +
     plot_annotation(tag_levels = 'A')
 
-ggsave('figures/pregabalin/07_publication-plot.png',
+ggsave('figures/pregabalin/10_publication-plot.png',
        plot = publication_plot,
        height = 15,
        width = 16)
