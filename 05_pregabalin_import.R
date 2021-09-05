@@ -5,7 +5,8 @@
 ############################################################
 
 #-- Date of download --#
-# 2021-06-20
+# 2021-06-20 (original download)
+# 2021-09-03 (added Alzain, Axalid, Lecaent, Rewisca to downlaoded files)
 
 #- load packages --#
 library(dplyr)
@@ -30,6 +31,7 @@ pregabalin_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?co
 pregabalin_225_tab <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEAAAZAZ&format=csv') 
 pregabalin_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEAAAGAG&format=csv') 
 pregabalin_300_tab <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEAAAWAW&format=csv') 
+
 lyrica_25_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAAAA&format=csv')
 lyrica_50_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBABAB&format=csv')
 lyrica_75_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBACAC&format=csv')
@@ -38,6 +40,42 @@ lyrica_150_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0
 lyrica_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAFAF&format=csv')
 lyrica_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAHAI&format=csv')
 lyrica_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBBAGAG&format=csv')
+
+alzain_25_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEAAAA&format=csv')
+alzain_50_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEABAB&format=csv')
+alzain_75_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEACAC&format=csv')
+alzain_100_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEADAD&format=csv')
+alzain_150_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEAEAE&format=csv')
+alzain_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEAFAF&format=csv')
+alzain_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEAGAI&format=csv')
+alzain_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBEAHAG&format=csv')
+
+axalid_25_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFAAAA&format=csv')
+axalid_50_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFABAB&format=csv')
+axalid_75_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFACAC&format=csv')
+axalid_100_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFADAD&format=csv')
+axalid_150_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFAEAE&format=csv')
+axalid_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFAFAF&format=csv')
+axalid_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFAGAI&format=csv')
+axalid_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBFAHAG&format=csv')
+
+lecaent_25_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDAAAA&format=csv')
+lecaent_50_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDABAB&format=csv')
+lecaent_75_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDACAC&format=csv')
+lecaent_100_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDADAD&format=csv')
+lecaent_150_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDAEAE&format=csv')
+lecaent_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDAFAF&format=csv')
+lecaent_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDAGAI&format=csv')
+lecaent_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBDAHAG&format=csv')
+
+rewisca_25_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCABAA&format=csv')
+rewisca_50_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCACAB&format=csv')
+rewisca_75_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCADAC&format=csv')
+rewisca_100_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCAAAD&format=csv')
+rewisca_150_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCAEAE&format=csv')
+rewisca_200_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCAFAF&format=csv')
+rewisca_225_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCAGAI&format=csv')
+rewisca_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010AEBCAHAG&format=csv')
 
 #-- Save original data --#
 if(!dir.exists('data-original')) {
@@ -54,6 +92,18 @@ write_csv(x = pregabalin_25_tab,
 write_csv(x = lyrica_25_cap,
           file = 'data-original/lyrica_25_cap.csv')
 
+write_csv(x = alzain_25_cap,
+          file = 'data-original/alzain_25_cap.csv')
+
+write_csv(x = axalid_25_cap,
+          file = 'data-original/axalid_25_cap.csv')
+
+write_csv(x = lecaent_25_cap,
+          file = 'data-original/lecaent_25_cap.csv')
+
+write_csv(x = rewisca_25_cap,
+          file = 'data-original/rewisca_25_cap.csv')
+
 # 50mg data
 write_csv(x = pregabalin_50_cap,
           file = 'data-original/pregabalin_50_cap.csv')
@@ -63,6 +113,18 @@ write_csv(x = pregabalin_50_tab,
 
 write_csv(x = lyrica_50_cap,
           file = 'data-original/lyrica_50_cap.csv')
+
+write_csv(x = alzain_50_cap,
+          file = 'data-original/alzain_50_cap.csv')
+
+write_csv(x = axalid_50_cap,
+          file = 'data-original/axalid_50_cap.csv')
+
+write_csv(x = lecaent_50_cap,
+          file = 'data-original/lecaent_50_cap.csv')
+
+write_csv(x = rewisca_50_cap,
+          file = 'data-original/rewisca_50_cap.csv')
 
 # 75mg data
 write_csv(x = pregabalin_75_cap,
@@ -74,6 +136,18 @@ write_csv(x = pregabalin_75_tab,
 write_csv(x = lyrica_75_cap,
           file = 'data-original/lyrica_75_cap.csv')
 
+write_csv(x = alzain_75_cap,
+          file = 'data-original/alzain_75_cap.csv')
+
+write_csv(x = axalid_75_cap,
+          file = 'data-original/axalid_75_cap.csv')
+
+write_csv(x = lecaent_75_cap,
+          file = 'data-original/lecaent_75_cap.csv')
+
+write_csv(x = rewisca_75_cap,
+          file = 'data-original/rewisca_75_cap.csv')
+
 # 100mg
 write_csv(x = pregabalin_100_cap,
           file = 'data-original/pregabalin_100_cap.csv')
@@ -83,6 +157,18 @@ write_csv(x = pregabalin_100_tab,
 
 write_csv(x = lyrica_100_cap,
           file = 'data-original/lyrica_100_cap.csv')
+
+write_csv(x = alzain_100_cap,
+          file = 'data-original/alzain_100_cap.csv')
+
+write_csv(x = axalid_100_cap,
+          file = 'data-original/axalid_100_cap.csv')
+
+write_csv(x = lecaent_100_cap,
+          file = 'data-original/lecaent_100_cap.csv')
+
+write_csv(x = rewisca_100_cap,
+          file = 'data-original/rewisca_100_cap.csv')
 
 # 150mg
 write_csv(x = pregabalin_150_cap,
@@ -94,6 +180,18 @@ write_csv(x = pregabalin_150_tab,
 write_csv(x = lyrica_150_cap,
           file = 'data-original/lyrica_150_cap.csv')
 
+write_csv(x = alzain_150_cap,
+          file = 'data-original/alzain_150_cap.csv')
+
+write_csv(x = axalid_150_cap,
+          file = 'data-original/axalid_150_cap.csv')
+
+write_csv(x = lecaent_150_cap,
+          file = 'data-original/lecaent_150_cap.csv')
+
+write_csv(x = rewisca_150_cap,
+          file = 'data-original/rewisca_150_cap.csv')
+
 # 200mg
 write_csv(x = pregabalin_200_cap,
           file = 'data-original/pregabalin_200_cap.csv')
@@ -103,6 +201,18 @@ write_csv(x = pregabalin_200_tab,
 
 write_csv(x = lyrica_200_cap,
           file = 'data-original/lyrica_200_cap.csv')
+
+write_csv(x = alzain_200_cap,
+          file = 'data-original/alzain_200_cap.csv')
+
+write_csv(x = axalid_200_cap,
+          file = 'data-original/axalid_200_cap.csv')
+
+write_csv(x = lecaent_200_cap,
+          file = 'data-original/lecaent_200_cap.csv')
+
+write_csv(x = rewisca_200_cap,
+          file = 'data-original/rewisca_200_cap.csv')
 
 # 225mg
 write_csv(x = pregabalin_225_cap,
@@ -114,6 +224,18 @@ write_csv(x = pregabalin_225_tab,
 write_csv(x = lyrica_225_cap,
           file = 'data-original/lyrica_225_cap.csv')
 
+write_csv(x = alzain_225_cap,
+          file = 'data-original/alzain_225_cap.csv')
+
+write_csv(x = axalid_225_cap,
+          file = 'data-original/axalid_225_cap.csv')
+
+write_csv(x = lecaent_225_cap,
+          file = 'data-original/lecaent_225_cap.csv')
+
+write_csv(x = rewisca_225_cap,
+          file = 'data-original/rewisca_225_cap.csv')
+
 # 300mg
 write_csv(x = pregabalin_300_cap,
           file = 'data-original/pregabalin_300_cap.csv')
@@ -124,155 +246,14 @@ write_csv(x = pregabalin_300_tab,
 write_csv(x = lyrica_300_cap,
           file = 'data-original/lyrica_300_cap.csv')
 
-#-- Process data by dose --#
-if(!dir.exists('data-clean')) {
-    dir.create('data-clean')
-}
+write_csv(x = alzain_300_cap,
+          file = 'data-original/alzain_300_cap.csv')
 
-# 25mg data
-pregabalin_25 <- left_join(pregabalin_25_cap, pregabalin_25_tab, by = 'date') %>% 
-    left_join(lyrica_25_cap, by = 'date') %>%  
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_25 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_25 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>%  
-    # Select columns
-    select(date, prescriptions_25, pills_25) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_25 = pills_25 / prescriptions_25)
+write_csv(x = axalid_300_cap,
+          file = 'data-original/axalid_300_cap.csv')
 
-# 50mg data
-pregabalin_50 <- left_join(pregabalin_50_cap, pregabalin_50_tab, by = 'date') %>% 
-    left_join(lyrica_50_cap, by = 'date') %>% 
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_50 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_50 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>%  
-    # Select columns
-    select(date, prescriptions_50, pills_50) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_50 = pills_50 / prescriptions_50)
+write_csv(x = lecaent_300_cap,
+          file = 'data-original/lecaent_300_cap.csv')
 
-# 75mg data
-pregabalin_75 <- left_join(pregabalin_75_cap, pregabalin_75_tab, by = 'date') %>% 
-    left_join(lyrica_75_cap, by = 'date') %>%  
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_75 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_75 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>%  
-    # Select columns
-    select(date, prescriptions_75, pills_75) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_75 = pills_75 / prescriptions_75)
-
-# 100mg data
-pregabalin_100 <- left_join(pregabalin_100_cap, pregabalin_100_tab, by = 'date') %>% 
-    left_join(lyrica_100_cap, by = 'date') %>%  
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_100 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_100 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>%  
-    # Select columns
-    select(date, prescriptions_100, pills_100) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_100 = pills_100 / prescriptions_100)
-
-# 150mg data
-pregabalin_150 <- left_join(pregabalin_150_cap, pregabalin_150_tab, by = 'date') %>% 
-    left_join(lyrica_150_cap, by = 'date') %>% 
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_150 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_150 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>% 
-    # Select columns
-    select(date, prescriptions_150, pills_150) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_150 = pills_150 / prescriptions_150)
-
-# 200mg data
-pregabalin_200 <- left_join(pregabalin_200_cap, pregabalin_200_tab, by = 'date') %>% 
-    left_join(lyrica_200_cap, by = 'date') %>% 
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_200 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_200 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>% 
-    # Select columns
-    select(date, prescriptions_200, pills_200) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_200 = pills_200 / prescriptions_200)
-
-# 225mg data
-pregabalin_225 <- left_join(pregabalin_225_cap, pregabalin_225_tab, by = 'date') %>% 
-    left_join(lyrica_225_cap, by = 'date') %>% 
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_225 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_225 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>% 
-    # Select columns
-    select(date, prescriptions_225, pills_225) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_225 = pills_225 / prescriptions_225)
-
-# 300mg data
-pregabalin_300 <- left_join(pregabalin_300_cap, pregabalin_300_tab, by = 'date') %>% 
-    left_join(lyrica_300_cap, by = 'date') %>% 
-    rowwise() %>% 
-    # Sum items
-    mutate(prescriptions_300 = sum(c_across(cols = starts_with('item')), na.rm = TRUE)) %>% 
-    # Sum quantities 
-    mutate(pills_300 = sum(c_across(cols = starts_with('quantity')), na.rm = TRUE)) %>% 
-    ungroup() %>% 
-    # Select columns
-    select(date, prescriptions_300, pills_300) %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_300 = pills_300 / prescriptions_300)
-
-#-- Join all dose data --#
-pregabalin <- pregabalin_25 %>% 
-    left_join(pregabalin_50) %>% 
-    left_join(pregabalin_75) %>% 
-    left_join(pregabalin_100) %>% 
-    left_join(pregabalin_150) %>% 
-    left_join(pregabalin_200) %>% 
-    left_join(pregabalin_225) %>% 
-    left_join(pregabalin_300)
-
-#-- Calculate monthly totals --#
-pregabalin_totals <- pregabalin %>% 
-    rowwise() %>% 
-    # Prescriptions
-    mutate(prescriptions_total = sum(c_across(cols = starts_with('prescription')), na.rm = TRUE)) %>% 
-    # Pills
-    mutate(pills_total = sum(c_across(cols = starts_with('pills')), na.rm = TRUE)) %>% 
-    ungroup() %>% 
-    # Calculate pills (quantity) per prescription (item)
-    mutate(quantity_per_item_total = pills_total / prescriptions_total)
-
-#-- Save analysis set --#
-pregabalin_totals %>% 
-    # Select month range (starting April 2017 to latest date)
-    filter(date >= as.Date('2017-04-01')) %>% 
-    # Add month counter
-    mutate(month = row_number()) %>% 
-    # Arrange columns
-    select(date, month, everything()) %>% 
-    write_csv(file = 'data-clean/pregabalin_analysis-set.csv')
-
-#-- Save full dataset --#
-pregabalin_totals %>% 
-    write_csv(file = 'data-clean/pregabalin_full-record.csv')
-
+write_csv(x = rewisca_300_cap,
+          file = 'data-original/rewisca_300_cap.csv')
