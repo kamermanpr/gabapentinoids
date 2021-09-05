@@ -5,7 +5,8 @@
 ############################################################
 
 #-- Date of download --#
-# 2021-06-20
+# 2021-06-20 (original)
+# 2021-09-03 (re-downloaded to fit with pregablin download dates)
 
 #- load packages --#
 library(dplyr)
@@ -19,6 +20,7 @@ gabapentin_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?co
 gabapentin_400_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010G0AAACAC&format=csv') 
 gabapentin_600_tab <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010G0AAAJAJ&format=csv') 
 gabapentin_800_tab <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010G0AAAKAK&format=csv') 
+
 neurontin_100_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010G0BBAAAA&format=csv') 
 neurontin_300_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010G0BBABAB&format=csv') 
 neurontin_400_cap <- read_csv('https://openprescribing.net/api/1.0/spending/?code=0408010G0BBACAC&format=csv') 
