@@ -11,7 +11,7 @@ library(lubridate)
 
 #-- Notes --#
 # Items: prescriptions
-# Quantity: number of pills
+# Quantity: number of pills dispensed
 # When calculating daily dose per month, all prescriptions assumed to be for 30 days
 
 #-- Import data --#
@@ -65,7 +65,10 @@ gabapentin_100 <- left_join(gabapentin_100_cap, neurontin_100_cap, by = 'date') 
     # Dose per month assuming a 30-day prescription
     mutate(average_daily_dose_100 = total_dose_per_prescription_100 / 30) %>% 
     # Select columns
-    select(date, prescriptions_100, pills_100, average_daily_dose_100)
+    select(date, prescriptions_100, pills_100, 
+           total_prescribed_dose_100,
+           total_dose_per_prescription_100,
+           average_daily_dose_100)
 
 # 300mg data
 gabapentin_300 <- left_join(gabapentin_300_cap, neurontin_300_cap, by = 'date') %>% 
@@ -86,7 +89,10 @@ gabapentin_300 <- left_join(gabapentin_300_cap, neurontin_300_cap, by = 'date') 
     # Dose per month assuming a 30-day prescription
     mutate(average_daily_dose_300 = total_dose_per_prescription_300 / 30) %>% 
     # Select columns
-    select(date, prescriptions_300, pills_300, average_daily_dose_300)
+    select(date, prescriptions_300, pills_300,  
+           total_prescribed_dose_300,
+           total_dose_per_prescription_300, 
+           average_daily_dose_300)
 
 # 400mg data
 gabapentin_400 <- left_join(gabapentin_400_cap, neurontin_400_cap, by = 'date') %>% 
@@ -107,7 +113,10 @@ gabapentin_400 <- left_join(gabapentin_400_cap, neurontin_400_cap, by = 'date') 
     # Dose per month assuming a 30-day prescription
     mutate(average_daily_dose_400 = total_dose_per_prescription_400 / 30) %>% 
     # Select columns
-    select(date, prescriptions_400, pills_400, average_daily_dose_400)
+    select(date, prescriptions_400, pills_400,  
+           total_prescribed_dose_400,
+           total_dose_per_prescription_400,
+           average_daily_dose_400)
 
 # 600mg data
 gabapentin_600 <- left_join(gabapentin_600_tab, neurontin_600_tab, by = 'date') %>% 
@@ -128,7 +137,10 @@ gabapentin_600 <- left_join(gabapentin_600_tab, neurontin_600_tab, by = 'date') 
     # Dose per month assuming a 30-day prescription
     mutate(average_daily_dose_600 = total_dose_per_prescription_600 / 30) %>% 
     # Select columns
-    select(date, prescriptions_600, pills_600, average_daily_dose_600)
+    select(date, prescriptions_600, pills_600, 
+           total_prescribed_dose_600, 
+           total_dose_per_prescription_600,
+           average_daily_dose_600)
 
 # 800mg data
 gabapentin_800 <- left_join(gabapentin_800_tab, neurontin_800_tab, by = 'date') %>% 
@@ -149,7 +161,10 @@ gabapentin_800 <- left_join(gabapentin_800_tab, neurontin_800_tab, by = 'date') 
     # Dose per month assuming a 30-day prescription
     mutate(average_daily_dose_800 = total_dose_per_prescription_800 / 30) %>% 
     # Select columns
-    select(date, prescriptions_800, pills_800, average_daily_dose_800)
+    select(date, prescriptions_800, pills_800, 
+           total_prescribed_dose_800, 
+           total_dose_per_prescription_800,
+           average_daily_dose_800)
 
 #-- Join all dose data --#
 gabapentin <- gabapentin_100 %>% 
@@ -162,10 +177,14 @@ gabapentin <- gabapentin_100 %>%
 gabapentin_totals <- gabapentin %>% 
     rowwise() %>% 
     # Prescriptions
-    mutate(prescriptions_total = sum(c_across(cols = starts_with('prescription')), na.rm = TRUE)) %>% 
+    mutate(prescriptions_total = sum(c_across(cols = starts_with('prescriptions')), na.rm = TRUE)) %>% 
     # Pills
-    mutate(pills_total = sum(c_across(cols = starts_with('pills')), na.rm = TRUE)) %>% 
-    ungroup() 
+    mutate(pills_total = sum(c_across(cols = starts_with('pills')), na.rm = TRUE)) %>%
+    # Total dose
+    mutate(dose_total = sum(c_across(cols = starts_with('total_prescribed')), na.rm = TRUE)) %>%
+    # Total dose per prescription
+    mutate(dose_per_prescription_total = sum(c_across(cols = starts_with('total_dose')), na.rm = TRUE)) %>%
+    ungroup()
 
 #-- Get dose weightings --#
 gabapentin_weighted <- gabapentin_totals %>% 
@@ -175,7 +194,7 @@ gabapentin_weighted <- gabapentin_totals %>%
            weight_400 = pills_400 / pills_total,
            weight_600 = pills_600 / pills_total,
            weight_800 = pills_800 / pills_total) %>% 
-    # Multiple each dose_* by weight
+    # Multiple each average_daily_dose_* by weight
     mutate(weighted_average_daily_dose_100 = average_daily_dose_100 * weight_100,
            weighted_average_daily_dose_300 = average_daily_dose_300 * weight_300,
            weighted_average_daily_dose_400 = average_daily_dose_400 * weight_400,
@@ -188,8 +207,8 @@ gabapentin_weighted <- gabapentin_totals %>%
 
 #-- Save analysis set --#
 gabapentin_weighted %>% 
-    # Select month range (starting April 2017 to latest date)
-    filter(date >= as.Date('2017-04-01')) %>% 
+    # Select month range (starting 2017-04-01 to 2021-03-01)
+    filter(date >= as.Date('2017-04-01') & date < as.Date('2021-04-01')) %>% 
     # Add month counter
     mutate(month = row_number()) %>% 
     # Arrange columns
