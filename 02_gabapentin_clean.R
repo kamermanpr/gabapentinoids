@@ -171,31 +171,14 @@ gabapentin_totals <- gabapentin %>%
     mutate(pills_total = sum(c_across(cols = starts_with('pills')), na.rm = TRUE)) %>%
     # Total dose
     mutate(dose_total = sum(c_across(cols = starts_with('total_prescribed')), na.rm = TRUE)) %>%
+    ungroup() %>% 
     # Total dose per prescription
-    mutate(dose_per_prescription_total = sum(c_across(cols = starts_with('total_dose')), na.rm = TRUE)) %>%
-    ungroup()
-
-#-- Get dose weightings --#
-gabapentin_weighted <- gabapentin_totals %>% 
-    # Divide each pills_* by pills_total
-    mutate(weight_100 = pills_100 / pills_total,
-           weight_300 = pills_300 / pills_total,
-           weight_400 = pills_400 / pills_total,
-           weight_600 = pills_600 / pills_total,
-           weight_800 = pills_800 / pills_total) %>% 
-    # Multiple each average_daily_dose_* by weight
-    mutate(weighted_average_daily_dose_100 = average_daily_dose_100 * weight_100,
-           weighted_average_daily_dose_300 = average_daily_dose_300 * weight_300,
-           weighted_average_daily_dose_400 = average_daily_dose_400 * weight_400,
-           weighted_average_daily_dose_600 = average_daily_dose_600 * weight_600,
-           weighted_average_daily_dose_800 = average_daily_dose_800 * weight_800) %>% 
-    # Get average daily dose
-    rowwise() %>% 
-    mutate(average_daily_dose_total = sum(c_across(starts_with('weighted_')), na.rm = TRUE)) %>% 
-    ungroup()
+    mutate(dose_per_prescription_total = dose_total / prescriptions_total) %>% 
+    # Average daily dose (assuming that each prescription item is for 30 days)
+    mutate(average_daily_dose = dose_per_prescription_total / 30)
 
 #-- Save analysis set --#
-gabapentin_weighted %>% 
+gabapentin_totals %>% 
     # Select month range (starting 2017-04-01 to 2021-03-01)
     filter(date >= as.Date('2017-04-01') & date < as.Date('2021-04-01')) %>% 
     # Add month counter
@@ -205,5 +188,5 @@ gabapentin_weighted %>%
     write_csv(file = 'data-clean/gabapentin_analysis-set.csv')
 
 #-- Save full dataset --#
-gabapentin_weighted %>% 
+gabapentin_totals %>% 
     write_csv(file = 'data-clean/gabapentin_full-record.csv')
