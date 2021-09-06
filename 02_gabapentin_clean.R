@@ -175,7 +175,7 @@ gabapentin_totals <- gabapentin %>%
     # Total dose per prescription
     mutate(dose_per_prescription_total = dose_total / prescriptions_total) %>% 
     # Average daily dose (assuming that each prescription item is for 30 days)
-    mutate(average_daily_dose = dose_per_prescription_total / 30)
+    mutate(average_daily_dose_total = dose_per_prescription_total / 30)
 
 #-- Save analysis set --#
 gabapentin_totals %>% 
