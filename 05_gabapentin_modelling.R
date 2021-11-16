@@ -46,7 +46,7 @@ data <- gabapentin %>%
            dose_per_prescription_total) 
 
 ########################################
-# Number of monthly prescription items #
+# Monthly number of prescription items #
 ########################################
 
 #-- Simple quantile regression (tau = 0.5, knots = 0) --#
@@ -66,31 +66,27 @@ fitted_prescriptions_simple <- data.frame(month = 1:48,
 ## Generate plot
 plot_prescriptions_simple <- ggplot(data = fitted_prescriptions_simple) +
     aes(x = month,
-        y = prescriptions_total/100000) +
+        y = prescriptions_total/10000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
                size = 5,
                alpha = 0.8) +
-    geom_line(aes(y = .fitted/100000),
+    geom_line(aes(y = .fitted/10000),
               colour = '#000000',
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Simple',
-         y = NULL,
-         x = NULL) +
+         y = expression('Number of prescription items (10'^4*')'),
+         x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
                                   'April 2020', 'April 2021')) +
     scale_fill_tableau() +
     scale_colour_tableau() +
-    theme(axis.ticks.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.text.x = element_blank(),
-          axis.title = element_blank(),
-          plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_prescriptions_simple
+    theme(plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_prescriptions_simple
 
 #-- Interrupted quantile regression (tau = 0.5, knots = 1) --#
 # Generate model
@@ -111,31 +107,27 @@ fitted_prescriptions_spline <- data.frame(month = 1:48,
 ## Generate plot
 plot_prescriptions_spline <- ggplot(data = fitted_prescriptions_spline) +
     aes(x = month,
-        y = prescriptions_total/100000) +
+        y = prescriptions_total/10000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
                size = 5,
                alpha = 0.8) +
-    geom_line(aes(y = .fitted/100000),
+    geom_line(aes(y = .fitted/10000),
               colour = '#000000',
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Spline (knots = 1)',
-         y = expression('Number of prescription items (10'^5*')'),
-         x = NULL) +
+         y = expression('Number of prescription items (10'^4*')'),
+         x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
                                   'April 2020', 'April 2021')) +
     scale_fill_tableau() +
     scale_colour_tableau() +
-    theme(axis.ticks.x = element_blank(),
-          axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.title.x = element_blank(),
-          plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_prescriptions_spline 
+    theme(plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_prescriptions_spline 
 
 #-- Simple robust regression (knots = 0): parallel slopes --#
 # Generate model
@@ -154,7 +146,7 @@ fitted_prescriptions_parallel <- data.frame(month = 1:48,
 ## Generate plot
 plot_prescriptions_parallel <- ggplot(data = fitted_prescriptions_parallel) +
     aes(x = month,
-        y = prescriptions_total/100000) +
+        y = prescriptions_total/10000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
@@ -167,7 +159,7 @@ plot_prescriptions_parallel <- ggplot(data = fitted_prescriptions_parallel) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Parallel slopes',
-         y = NULL,
+         y = expression('Number of prescription items (10'^4*')'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
@@ -183,10 +175,14 @@ AIC(prescriptions_simple)
 AIC(prescriptions_spline)
 AIC(prescriptions_parallel)
 
-# Calculate difference in AIC (vs simple regression)
+# Calculate difference in AIC (vs parallel slopes regression, the simplest model)
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
 AIC(prescriptions_spline) - AIC(prescriptions_parallel)
 AIC(prescriptions_simple) - AIC(prescriptions_parallel)
+
+# No significant information loss between simple and parallel (delta AIC < 2), 
+# but using a spline resulted in a significant loss of information compared 
+# to the parallel slopes model
 
 #######################################
 # Number of pills dispensed per month #
@@ -209,13 +205,13 @@ fitted_pills_simple <- data.frame(month = 1:48,
 ## Generate plot
 plot_pills_simple <- ggplot(data = fitted_pills_simple) +
     aes(x = month,
-        y = pills_total/10000000) +
+        y = pills_total/1000000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
                size = 5,
                alpha = 0.8) +
-    geom_line(aes(y = .fitted/10000000),
+    geom_line(aes(y = .fitted/1000000),
               colour = '#000000',
               size = 1) +
     geom_vline(xintercept = 25,
@@ -254,19 +250,19 @@ fitted_pills_spline <- data.frame(month = 1:48,
 ## Generate plot
 plot_pills_spline <- ggplot(data = fitted_pills_spline) +
     aes(x = month,
-        y = pills_total/10000000) +
+        y = pills_total/1000000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
                size = 5,
                alpha = 0.8) +
-    geom_line(aes(y = .fitted/10000000),
+    geom_line(aes(y = .fitted/1000000),
               colour = '#000000',
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Spline (knots = 1)',
-         y = expression('Number of pills (10'^7*')'),
+         y = expression('Number of pills (10'^6*')'),
          x = NULL) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
@@ -297,7 +293,7 @@ fitted_pills_parallel <- data.frame(month = 1:48,
 ## Generate plot
 plot_pills_parallel <- ggplot(data = fitted_pills_parallel) +
     aes(x = month,
-        y = pills_total/10000000) +
+        y = pills_total/1000000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
@@ -326,14 +322,18 @@ AIC(pills_simple)
 AIC(pills_spline)
 AIC(pills_parallel)
 
-# Calculate difference in AIC (vs simple regression)
+# Calculate difference in AIC (vs parallel slopes regression, the simplest model))
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
 AIC(pills_spline) - AIC(pills_parallel)
 AIC(pills_simple) - AIC(pills_parallel)
 
-######################
-# Monthly total dose #
-######################
+# Significant information loss between simple and parallel (delta AIC > 2), 
+# and a significant loss of information between the parallel slopes and 
+# spline model.
+
+#################################
+# Monthly total dose prescribed #
+#################################
 
 #-- Simple quantile regression (tau = 0.5, knots = 0) --#
 # Generate model
@@ -474,6 +474,10 @@ AIC(quantity_parallel)
 AIC(quantity_simple) - AIC(quantity_parallel)
 AIC(quantity_spline) - AIC(quantity_parallel)
 
+# Significant information loss between simple and parallel (delta AIC > 2), 
+# and a significant loss of information between the parallel slopes and 
+# spline model.
+
 ######################################
 # Monthly dose per prescription item #
 ######################################
@@ -495,31 +499,27 @@ fitted_dose_simple <- data.frame(month = 1:48,
 ## Generate plot
 plot_dose_simple <- ggplot(data = fitted_dose_simple) +
     aes(x = month,
-        y = dose_total/10000) +
+        y = dose_total/1000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
                size = 5,
                alpha = 0.8) +
-    geom_line(aes(y = .fitted/10000),
+    geom_line(aes(y = .fitted/1000),
               colour = '#000000',
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Simple',
-         y = NULL,
-         x = NULL) +
+         y = expression('Dose per prescription item (10'^3*' mg)'),
+         x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
                                   'April 2020', 'April 2021')) +
     scale_fill_tableau() +
     scale_colour_tableau() +
-    theme(axis.ticks.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.text.x = element_blank(),
-          axis.title = element_blank(),
-          plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_dose_simple
+    theme(plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_dose_simple
 
 #-- Interrupted quantile regression (tau = 0.5, knots = 1) --#
 # Generate model
@@ -540,31 +540,27 @@ fitted_dose_spline <- data.frame(month = 1:48,
 ## Generate plot
 plot_dose_spline <- ggplot(data = fitted_dose_spline) +
     aes(x = month,
-        y = dose_total/10000) +
+        y = dose_total/1000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
                size = 5,
                alpha = 0.8) +
-    geom_line(aes(y = .fitted/10000),
+    geom_line(aes(y = .fitted/1000),
               colour = '#000000',
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Spline (knots = 1)',
-         y = expression('Dose per prescription item (10'^4*' mg)'),
-         x = NULL) +
+         y = expression('Dose per prescription item (10'^3*' mg)'),
+         x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
                                   'April 2020', 'April 2021')) +
     scale_fill_tableau() +
     scale_colour_tableau() +
-    theme(axis.ticks.x = element_blank(),
-          axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.title.x = element_blank(),
-          plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_dose_spline 
+    theme(plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_dose_spline 
 
 #-- Simple robust regression (knots = 0): parallel slopes --#
 # Generate model
@@ -583,7 +579,7 @@ fitted_dose_parallel <- data.frame(month = 1:48,
 ## Generate plot
 plot_dose_parallel <- ggplot(data = fitted_dose_parallel) +
     aes(x = month,
-        y = dose_total/10000) +
+        y = dose_total/1000) +
     geom_point(aes(colour = period,
                    fill = period),
                shape = 21,
@@ -596,7 +592,7 @@ plot_dose_parallel <- ggplot(data = fitted_dose_parallel) +
     geom_vline(xintercept = 25,
                linetype = 2) +
     labs(title = 'Parallel slopes',
-         y = NULL,
+         y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
@@ -612,29 +608,63 @@ AIC(dose_simple)
 AIC(dose_spline)
 AIC(dose_parallel)
 
-# Calculate difference in AIC (vs simple regression)
+# Calculate difference in AIC (vs parallel slopes regression)
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
 AIC(dose_simple) - AIC(dose_parallel)
 AIC(dose_spline) - AIC(dose_parallel)
+
+# Significant information loss between simple and parallel (delta AIC > 2), 
+# and a significant loss of information between the parallel slopes and 
+# spline model.
 
 ########################
 #   Publication plot   #
 ########################
 
+#-- Process figures for plotting --#
+# Monthly number of prescription items
+plot_prescriptions_simple2 <- plot_prescriptions_simple +
+    theme(axis.title = element_blank(),
+          axis.text.x = element_blank(),
+          axis.line.x = element_blank(),
+          axis.ticks.x = element_blank())
+
+plot_prescriptions_spline2 <- plot_prescriptions_spline +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.line.x = element_blank(),
+          axis.ticks.x = element_blank())
+
+plot_prescriptions_parallel2 <- plot_prescriptions_parallel +
+    theme(axis.title.y = element_blank())
+
+# Monthly dose per prescription item
+plot_dose_simple2 <- plot_dose_simple +
+    theme(axis.title = element_blank(),
+          axis.text.x = element_blank(),
+          axis.line.x = element_blank(),
+          axis.ticks.x = element_blank())
+
+plot_dose_spline2 <- plot_dose_spline +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.line.x = element_blank(),
+          axis.ticks.x = element_blank())
+
+plot_dose_parallel2 <- plot_dose_parallel +
+    theme(axis.title.y = element_blank())
+
 #-- Combined plot --#
-publication_plot <- plot_quantity_simple +
-    plot_quantity_spline +
-    plot_quantity_parallel +
-    plot_prescriptions_simple +
-    plot_prescriptions_spline +
-    plot_prescriptions_parallel + 
-    plot_dose_simple +
-    plot_dose_spline +
-    plot_dose_parallel +
-    plot_layout(ncol = 3, byrow = FALSE) +
+publication_plot <- plot_prescriptions_simple2 +
+    plot_prescriptions_spline2 +
+    plot_prescriptions_parallel2 + 
+    plot_dose_simple2 +
+    plot_dose_spline2 +
+    plot_dose_parallel2 +
+    plot_layout(ncol = 2, byrow = FALSE) +
     plot_annotation(tag_levels = 'A')
 
 ggsave('figures/gabapentin/01_gabapentin_publication-plot.png',
        plot = publication_plot,
        height = 15,
-       width = 24)
+       width = 16)
