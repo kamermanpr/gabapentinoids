@@ -1,0 +1,349 @@
+---
+title: "Supplement 1"
+subtitle: "Gabapentin"
+author: "Peter Kamerman"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+mainfont: Helvetica
+---
+
+----
+
+\newpage
+
+# Summary: 100mg dose
+
+## Number of prescriptions per month
+
+![](figures/gabapentin/100_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/100_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/gabapentin/100_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/100_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/gabapentin/100_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/100_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/gabapentin/100_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/100_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/gabapentin/100_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/100_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 300mg dose
+
+## Number of prescriptions per month
+
+![](figures/gabapentin/300_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/300_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/gabapentin/300_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/300_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/gabapentin/300_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/300_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/gabapentin/300_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/300_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/gabapentin/300_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/300_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 400mg dose
+
+## Number of prescriptions per month
+
+![](figures/gabapentin/400_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/400_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/gabapentin/400_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/400_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/gabapentin/400_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/400_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/gabapentin/400_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/400_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/gabapentin/400_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/400_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 600mg dose
+
+## Number of prescriptions per month
+
+![](figures/gabapentin/600_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/600_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/gabapentin/600_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/600_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/gabapentin/600_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/600_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/gabapentin/600_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/600_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/gabapentin/600_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/600_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 800mg dose
+
+## Number of prescriptions per month
+
+![](figures/gabapentin/800_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/800_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/gabapentin/800_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/800_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/gabapentin/800_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/800_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/gabapentin/800_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/800_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/gabapentin/800_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/800_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: total dose
+
+## Number of prescriptions per month
+
+![](figures/gabapentin/total_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/total_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/gabapentin/total_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/total_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/gabapentin/total_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/total_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/gabapentin/total_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/total_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/gabapentin/total_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/gabapentin/total_figure_average-daily-dose.png){height=45%}

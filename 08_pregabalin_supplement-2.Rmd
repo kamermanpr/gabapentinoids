@@ -1,0 +1,517 @@
+---
+title: "Supplement 2"
+subtitle: "Pregabalin"
+author: "Peter Kamerman"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+mainfont: Helvetica
+---
+
+----
+
+\newpage
+
+# Summary: 25mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/25_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/25_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/25_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/25_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/25_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/25_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/25_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/25_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/25_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/25_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 50mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/50_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/50_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/50_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/50_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/50_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/50_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/50_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/50_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/50_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/50_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 75mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/75_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/75_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/75_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/75_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/75_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/75_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/75_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/75_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/75_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/75_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 100mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/100_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/100_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/100_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/100_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/100_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/100_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/100_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/100_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/100_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/100_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 150mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/150_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/150_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/150_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/150_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/150_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/150_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/150_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/150_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/150_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/150_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 200mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/200_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/200_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/200_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/200_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/200_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/200_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/200_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/200_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/200_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/200_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 225mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/225_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/225_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/225_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/225_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/225_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/225_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/225_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/225_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/225_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/225_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: 300mg dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/300_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/300_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/300_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/300_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/300_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/300_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/300_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/300_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/300_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/300_figure_average-daily-dose.png){height=45%}
+
+\newpage
+
+# Summary: total dose
+
+## Number of prescriptions per month
+
+![](figures/pregabalin/total_table_number-of-prescription-items.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/total_figure_number-of-prescription-items.png){height=45%}
+
+\newpage
+
+## Number of pills dispensed per month
+
+![](figures/pregabalin/total_table_number-of-pills-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/total_figure_number-of-pills-dispensed.png){height=45%}
+
+\newpage
+
+## Total amount of drug dispensed per month
+
+![](figures/pregabalin/total_table_total-quantity-dispensed.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/total_figure_total-quantity-dispensed.png){height=45%}
+
+\newpage
+
+## Monthly dose per prescription 
+
+![](figures/pregabalin/total_table_dose-per-prescription.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/total_figure_dose-per-prescription.png){height=45%}
+
+\newpage
+
+## Average daily dose
+
+Assumes that each prescription item is for 30 days.
+
+\vspace{10mm}
+
+![](figures/pregabalin/total_table_average-daily-dose.pdf)
+
+\vspace{10mm}
+
+![](figures/pregabalin/total_figure_average-daily-dose.png){height=45%}
