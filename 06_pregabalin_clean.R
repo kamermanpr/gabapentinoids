@@ -156,8 +156,6 @@ pregabalin_25 <- left_join(pregabalin_25_cap, pregabalin_25_tab, by = 'date') %>
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_25, pills_25) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_25 = pills_25 * 25) %>% 
     # Dose per prescription
@@ -185,8 +183,6 @@ pregabalin_50 <- left_join(pregabalin_50_cap, pregabalin_50_tab, by = 'date') %>
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_50, pills_50) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_50 = pills_50 * 50) %>% 
     # Dose per prescription
@@ -214,8 +210,6 @@ pregabalin_75 <- left_join(pregabalin_75_cap, pregabalin_75_tab, by = 'date') %>
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_75, pills_75) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_75 = pills_75 * 75) %>% 
     # Dose per prescription
@@ -243,8 +237,6 @@ pregabalin_100 <- left_join(pregabalin_100_cap, pregabalin_100_tab, by = 'date')
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_100, pills_100) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_100 = pills_100 * 100) %>% 
     # Dose per prescription
@@ -272,8 +264,6 @@ pregabalin_150 <- left_join(pregabalin_150_cap, pregabalin_150_tab, by = 'date')
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_150, pills_150) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_150 = pills_150 * 150) %>% 
     # Dose per prescription
@@ -301,8 +291,6 @@ pregabalin_200 <- left_join(pregabalin_200_cap, pregabalin_200_tab, by = 'date')
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_200, pills_200) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_200 = pills_200 * 200) %>% 
     # Dose per prescription
@@ -329,8 +317,6 @@ pregabalin_225 <- left_join(pregabalin_225_cap, pregabalin_225_tab, by = 'date')
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_225, pills_225) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_225 = pills_225 * 225) %>% 
     # Dose per prescription
@@ -358,8 +344,6 @@ pregabalin_300 <- left_join(pregabalin_300_cap, pregabalin_300_tab, by = 'date')
     ungroup() %>%  
     # Select columns
     select(date, prescriptions_300, pills_300) %>% 
-    # Add days in a month
-    mutate(days_per_month = days_in_month(date)) %>% 
     # Total dose per month (dose = 100mg)
     mutate(total_prescribed_dose_300 = pills_300 * 300) %>% 
     # Dose per prescription
@@ -391,37 +375,14 @@ pregabalin_totals <- pregabalin %>%
     mutate(pills_total = sum(c_across(cols = starts_with('pills')), na.rm = TRUE)) %>% 
     # Total dose
     mutate(dose_total = sum(c_across(cols = starts_with('total_prescribed')), na.rm = TRUE)) %>%
+    ungroup() %>% 
     # Total dose per prescription
-    mutate(dose_per_prescription_total = sum(c_across(cols = starts_with('total_dose')), na.rm = TRUE)) %>%
-    ungroup()
-
-#-- Get dose weightings --#
-pregabalin_weighted <- pregabalin_totals %>% 
-    # Divide each pills_* by pills_total
-    mutate(weight_25 = pills_25 / pills_total,
-           weight_50 = pills_50 / pills_total,
-           weight_75 = pills_75 / pills_total,
-           weight_100 = pills_100 / pills_total,
-           weight_150 = pills_150 / pills_total,
-           weight_200 = pills_200 / pills_total,
-           weight_225 = pills_225 / pills_total,
-           weight_300 = pills_300 / pills_total) %>% 
-    # Multiple each dose_* by weight
-    mutate(weighted_average_daily_dose_25 = average_daily_dose_25 * weight_25,
-           weighted_average_daily_dose_50 = average_daily_dose_50 * weight_50,
-           weighted_average_daily_dose_75 = average_daily_dose_75 * weight_75,
-           weighted_average_daily_dose_100 = average_daily_dose_100 * weight_100,
-           weighted_average_daily_dose_150 = average_daily_dose_150 * weight_150,
-           weighted_average_daily_dose_200 = average_daily_dose_200 * weight_200,
-           weighted_average_daily_dose_225 = average_daily_dose_225 * weight_225,
-           weighted_average_daily_dose_300 = average_daily_dose_300 * weight_300) %>% 
-    # Get average daily dose
-    rowwise() %>% 
-    mutate(weighted_average_daily_dose_total = sum(c_across(starts_with('weighted_')), na.rm = TRUE)) %>% 
-    ungroup()
+    mutate(dose_per_prescription_total = dose_total / prescriptions_total) %>% 
+    # Average daily dose (assuming that each prescription item is for 30 days)
+    mutate(average_daily_dose_total = dose_per_prescription_total / 30)
 
 #-- Save analysis set --#
-pregabalin_weighted %>% 
+pregabalin_totals %>% 
     # Select month range (starting 2017-04-01 to 2021-03-01)
     filter(date >= as.Date('2017-04-01') & date < as.Date('2021-04-01')) %>% 
     # Add month counter
@@ -431,5 +392,5 @@ pregabalin_weighted %>%
     write_csv(file = 'data-clean/pregabalin_analysis-set.csv')
 
 #-- Save full dataset --#
-pregabalin_weighted %>% 
+pregabalin_totals %>% 
     write_csv(file = 'data-clean/pregabalin_full-record.csv')
