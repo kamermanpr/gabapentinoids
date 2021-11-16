@@ -1,18 +1,16 @@
 ############################################################
 #                                                          #
-#                         Analysis                         #
+#                  Descriptive summarises                  #
 #                                                          #
 ############################################################
 
 #-- Load packages --#
 library(readr)
 library(dplyr)
-library(lubridate)
 library(skimr)
-library(knitr)
+library(kableExtra)
 library(ggplot2)
 library(ggthemes)
-library(patchwork)
 
 #-- Options --#
 # Scientific notation threshold
@@ -23,15 +21,18 @@ if(!dir.exists('figures')) {
     dir.create('figures')
 }
 
-# Create figures directory for gabapentin
+# Create figures directory for pregabalin
 if(!dir.exists('figures/pregabalin')) {
     dir.create('figures/pregabalin')
 }
 
 #-- Set ggplot theme --#
-theme_set(new = theme_minimal(base_size = 18) +
+theme_set(new = theme_minimal(base_size = 16) +
               theme(legend.position = 'none',
-                    plot.title = element_text(size = 18),
+                    plot.background = element_rect(colour = '#FFFFFF',
+                                                   fill = '#FFFFFF'),
+                    plot.title = element_text(size = 16),
+                    plot.title.position = 'plot',
                     plot.caption = element_text(size = 12),
                     panel.grid = element_blank(),
                     axis.text = element_text(colour = '#000000'),
@@ -39,814 +40,1976 @@ theme_set(new = theme_minimal(base_size = 18) +
                     axis.ticks = element_line(size = 0.5)))
 
 #-- Set skimr settings --#
-my_skim <- skim_with(numeric = sfl(hist = NULL, iqr = IQR),
-                     base = sfl(n_missing = 'n_missing', n_complete = 'n_complete'))
+my_skim <- skim_with(numeric = sfl(hist = NULL),
+                     base = sfl(n_missing = 'n_missing', 
+                                n_complete = 'n_complete'))
 
 #-- Import data --#
-pregabalin <- read_csv('data-clean/pregabalin_full-record.csv')
+pregabalin <- read_csv('data-clean/pregabalin_analysis-set.csv')
 
 #-- Process data --#
-pregabalin_year <- pregabalin %>% 
-    mutate(year = year(date))
-
-# 25mg dose
-D25 <- pregabalin_year %>% 
-    select(year, prescriptions_25, pills_25, average_daily_dose_25) %>% 
-    rename(number_of_prescriptions = prescriptions_25,
-           number_of_pills_prescribed = pills_25,
-           average_daily_dose_mg = average_daily_dose_25)
-
-# 50mg dose
-D50 <- pregabalin_year %>% 
-    select(year, prescriptions_50, pills_50, average_daily_dose_50) %>% 
-    rename(number_of_prescriptions = prescriptions_50,
-           number_of_pills_prescribed = pills_50,
-           average_daily_dose_mg = average_daily_dose_50)
-
-# 75mg dose
-D75 <- pregabalin_year %>% 
-    select(year, prescriptions_75, pills_75, average_daily_dose_75) %>% 
-    rename(number_of_prescriptions = prescriptions_75,
-           number_of_pills_prescribed = pills_75,
-           average_daily_dose_mg = average_daily_dose_75)
-
-# 100mg dose
-D100 <- pregabalin_year %>% 
-    select(year, prescriptions_100, pills_100, average_daily_dose_100) %>% 
-    rename(number_of_prescriptions = prescriptions_100,
-           number_of_pills_prescribed = pills_100,
-           average_daily_dose_mg = average_daily_dose_100)
-
-# 150mg dose
-D150 <- pregabalin_year %>% 
-    select(year, prescriptions_150, pills_150, average_daily_dose_150) %>% 
-    rename(number_of_prescriptions = prescriptions_150,
-           number_of_pills_prescribed = pills_150,
-           average_daily_dose_mg = average_daily_dose_150)
+# Define pre vs post 2019-04-01 time periods
+pregabalin_period <- pregabalin %>% 
+    mutate(period = ifelse(date < as.Date('2019-04-01'),
+                           yes = 'Before rescheduling',
+                           no = 'After rescheduling')) %>% 
+    mutate(period = factor(period,
+                           levels = c('Before rescheduling',
+                                      'After rescheduling'),
+                           ordered = TRUE))
 
 # 200mg dose
-D200 <- pregabalin_year %>% 
-    select(year, prescriptions_200, pills_200, average_daily_dose_200) %>% 
-    rename(number_of_prescriptions = prescriptions_200,
-           number_of_pills_prescribed = pills_200,
-           average_daily_dose_mg = average_daily_dose_200)
+pregabalin_200 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_200, 
+           pills_200,
+           total_prescribed_dose_200,
+           total_dose_per_prescription_200,
+           average_daily_dose_200)
+
+# 50mg
+pregabalin_50 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_50, 
+           pills_50,
+           total_prescribed_dose_50,
+           total_dose_per_prescription_50,
+           average_daily_dose_50)
+
+# 75mg
+pregabalin_75 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_75, 
+           pills_75,
+           total_prescribed_dose_75,
+           total_dose_per_prescription_75,
+           average_daily_dose_75)
+
+# 100mg
+pregabalin_100 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_100, 
+           pills_100,
+           total_prescribed_dose_100,
+           total_dose_per_prescription_100,
+           average_daily_dose_100)
+
+# 150mg
+pregabalin_150 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_150, 
+           pills_150,
+           total_prescribed_dose_150,
+           total_dose_per_prescription_150,
+           average_daily_dose_150)
+
+# 200mg
+pregabalin_200 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_200, 
+           pills_200,
+           total_prescribed_dose_200,
+           total_dose_per_prescription_200,
+           average_daily_dose_200)
+
+# 2200mg
+pregabalin_2200 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_2200, 
+           pills_2200,
+           total_prescribed_dose_2200,
+           total_dose_per_prescription_2200,
+           average_daily_dose_2200)
+
+# 300mg
+pregabalin_300 <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_300, 
+           pills_300,
+           total_prescribed_dose_300,
+           total_dose_per_prescription_300,
+           average_daily_dose_300)
+
+# Total dose
+pregabalin_total <- pregabalin_period %>% 
+    select(date, 
+           period, 
+           prescriptions_total, 
+           pills_total,
+           dose_total,
+           dose_per_prescription_total,
+           average_daily_dose_total)
+
+#-- Summaries (all outputs saved to file) --#
+# 200mg dose
+## Number of prescription items by period
+pregabalin_200 %>% 
+    select(period,
+           prescriptions_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_number-of-prescription-items.pdf')
+
+p200_01 <- pregabalin_200 %>% 
+    select(period,
+           prescriptions_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_number-of-prescription-items.png',
+       plot = p200_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_200 %>% 
+    select(period,
+           pills_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_number-of-pills-dispensed.pdf')
+
+p200_02 <- pregabalin_200 %>% 
+    select(period,
+           pills_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_number-of-pills-dispensed.png',
+       plot = p200_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_200 %>% 
+    select(period,
+           total_prescribed_dose_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_total-quantity-dispensed.pdf')
+
+p200_03 <- pregabalin_200 %>% 
+    select(period,
+           total_prescribed_dose_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_total-quantity-dispensed.png',
+       plot = p200_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_200 %>% 
+    select(period,
+           total_dose_per_prescription_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_dose-per-prescription.pdf')
+
+p200_04 <- pregabalin_200 %>% 
+    select(period,
+           total_dose_per_prescription_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_dose-per-prescription.png',
+       plot = p200_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_200 %>% 
+    select(period,
+           average_daily_dose_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_average-daily-dose.pdf')
+
+p200_05 <- pregabalin_200 %>% 
+    select(period,
+           average_daily_dose_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_average-daily-dose.png',
+       plot = p200_05,
+       height = 6,
+       width = 7)
+
+# 50mg dose
+## Number of prescription items by period
+pregabalin_50 %>% 
+    select(period,
+           prescriptions_50) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 50mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/50_table_number-of-prescription-items.pdf')
+
+p50_01 <- pregabalin_50 %>% 
+    select(period,
+           prescriptions_50) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_50,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 50mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/50_figure_number-of-prescription-items.png',
+       plot = p50_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_50 %>% 
+    select(period,
+           pills_50) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 50mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/50_table_number-of-pills-dispensed.pdf')
+
+p50_02 <- pregabalin_50 %>% 
+    select(period,
+           pills_50) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_50,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 50mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/50_figure_number-of-pills-dispensed.png',
+       plot = p50_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_50 %>% 
+    select(period,
+           total_prescribed_dose_50) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 50mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/50_table_total-quantity-dispensed.pdf')
+
+p50_03 <- pregabalin_50 %>% 
+    select(period,
+           total_prescribed_dose_50) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_50,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 50mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/50_figure_total-quantity-dispensed.png',
+       plot = p50_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_50 %>% 
+    select(period,
+           total_dose_per_prescription_50) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 50mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/50_table_dose-per-prescription.pdf')
+
+p50_04 <- pregabalin_50 %>% 
+    select(period,
+           total_dose_per_prescription_50) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_50,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 50mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/50_figure_dose-per-prescription.png',
+       plot = p50_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_50 %>% 
+    select(period,
+           average_daily_dose_50) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 50mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/50_table_average-daily-dose.pdf')
+
+p50_05 <- pregabalin_50 %>% 
+    select(period,
+           average_daily_dose_50) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_50,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 50mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/50_figure_average-daily-dose.png',
+       plot = p50_05,
+       height = 6,
+       width = 7)
+
+# 75mg dose
+## Number of prescription items by period
+pregabalin_75 %>% 
+    select(period,
+           prescriptions_75) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 75mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/75_table_number-of-prescription-items.pdf')
+
+p75_01 <- pregabalin_75 %>% 
+    select(period,
+           prescriptions_75) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_75,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.75, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 75mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/75_figure_number-of-prescription-items.png',
+       plot = p75_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_75 %>% 
+    select(period,
+           pills_75) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 75mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/75_table_number-of-pills-dispensed.pdf')
+
+p75_02 <- pregabalin_75 %>% 
+    select(period,
+           pills_75) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_75,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.75, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 75mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/75_figure_number-of-pills-dispensed.png',
+       plot = p75_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_75 %>% 
+    select(period,
+           total_prescribed_dose_75) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 75mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/75_table_total-quantity-dispensed.pdf')
+
+p75_03 <- pregabalin_75 %>% 
+    select(period,
+           total_prescribed_dose_75) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_75,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.75, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 75mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/75_figure_total-quantity-dispensed.png',
+       plot = p75_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_75 %>% 
+    select(period,
+           total_dose_per_prescription_75) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 75mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/75_table_dose-per-prescription.pdf')
+
+p75_04 <- pregabalin_75 %>% 
+    select(period,
+           total_dose_per_prescription_75) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_75,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.75, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 75mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/75_figure_dose-per-prescription.png',
+       plot = p75_04,
+       height = 6,
+       width = 7)
+
+# 100mg dose
+## Number of prescription items by period
+pregabalin_100 %>% 
+    select(period,
+           prescriptions_100) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 100mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/100_table_number-of-prescription-items.pdf')
+
+p100_01 <- pregabalin_100 %>% 
+    select(period,
+           prescriptions_100) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_100,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.100, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 100mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/100_figure_number-of-prescription-items.png',
+       plot = p100_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_100 %>% 
+    select(period,
+           pills_100) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 100mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/100_table_number-of-pills-dispensed.pdf')
+
+p100_02 <- pregabalin_100 %>% 
+    select(period,
+           pills_100) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_100,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.100, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 100mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/100_figure_number-of-pills-dispensed.png',
+       plot = p100_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_100 %>% 
+    select(period,
+           total_prescribed_dose_100) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 100mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/100_table_total-quantity-dispensed.pdf')
+
+p100_03 <- pregabalin_100 %>% 
+    select(period,
+           total_prescribed_dose_100) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_100,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.100, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 100mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/100_figure_total-quantity-dispensed.png',
+       plot = p100_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_100 %>% 
+    select(period,
+           total_dose_per_prescription_100) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 100mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/100_table_dose-per-prescription.pdf')
+
+p100_04 <- pregabalin_100 %>% 
+    select(period,
+           total_dose_per_prescription_100) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_100,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.100, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 100mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/100_figure_dose-per-prescription.png',
+       plot = p100_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_100 %>% 
+    select(period,
+           average_daily_dose_100) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 100mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/100_table_average-daily-dose.pdf')
+
+p100_05 <- pregabalin_100 %>% 
+    select(period,
+           average_daily_dose_100) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_100,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.100, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 100mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/100_figure_average-daily-dose.png',
+       plot = p100_05,
+       height = 6,
+       width = 7)
+
+# 150mg dose
+## Number of prescription items by period
+pregabalin_150 %>% 
+    select(period,
+           prescriptions_150) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 150mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/150_table_number-of-prescription-items.pdf')
+
+p150_01 <- pregabalin_150 %>% 
+    select(period,
+           prescriptions_150) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_150,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.150, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 150mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/150_figure_number-of-prescription-items.png',
+       plot = p150_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_150 %>% 
+    select(period,
+           pills_150) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 150mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/150_table_number-of-pills-dispensed.pdf')
+
+p150_02 <- pregabalin_150 %>% 
+    select(period,
+           pills_150) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_150,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.150, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 150mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/150_figure_number-of-pills-dispensed.png',
+       plot = p150_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_150 %>% 
+    select(period,
+           total_prescribed_dose_150) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 150mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/150_table_total-quantity-dispensed.pdf')
+
+p150_03 <- pregabalin_150 %>% 
+    select(period,
+           total_prescribed_dose_150) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_150,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.150, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 150mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/150_figure_total-quantity-dispensed.png',
+       plot = p150_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_150 %>% 
+    select(period,
+           total_dose_per_prescription_150) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 150mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/150_table_dose-per-prescription.pdf')
+
+p150_04 <- pregabalin_150 %>% 
+    select(period,
+           total_dose_per_prescription_150) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_150,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.150, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 150mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/150_figure_dose-per-prescription.png',
+       plot = p150_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_150 %>% 
+    select(period,
+           average_daily_dose_150) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 150mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/150_table_average-daily-dose.pdf')
+
+p150_05 <- pregabalin_150 %>% 
+    select(period,
+           average_daily_dose_150) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_150,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.150, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 150mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/150_figure_average-daily-dose.png',
+       plot = p150_05,
+       height = 6,
+       width = 7)
+
+# 200mg dose
+## Number of prescription items by period
+pregabalin_200 %>% 
+    select(period,
+           prescriptions_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_number-of-prescription-items.pdf')
+
+p200_01 <- pregabalin_200 %>% 
+    select(period,
+           prescriptions_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_number-of-prescription-items.png',
+       plot = p200_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_200 %>% 
+    select(period,
+           pills_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_number-of-pills-dispensed.pdf')
+
+p200_02 <- pregabalin_200 %>% 
+    select(period,
+           pills_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_number-of-pills-dispensed.png',
+       plot = p200_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_200 %>% 
+    select(period,
+           total_prescribed_dose_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_total-quantity-dispensed.pdf')
+
+p200_03 <- pregabalin_200 %>% 
+    select(period,
+           total_prescribed_dose_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_total-quantity-dispensed.png',
+       plot = p200_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_200 %>% 
+    select(period,
+           total_dose_per_prescription_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_dose-per-prescription.pdf')
+
+p200_04 <- pregabalin_200 %>% 
+    select(period,
+           total_dose_per_prescription_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_dose-per-prescription.png',
+       plot = p200_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_200 %>% 
+    select(period,
+           average_daily_dose_200) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 200mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/200_table_average-daily-dose.pdf')
+
+p200_05 <- pregabalin_200 %>% 
+    select(period,
+           average_daily_dose_200) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_200,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.200, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 200mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/200_figure_average-daily-dose.png',
+       plot = p200_05,
+       height = 6,
+       width = 7)
 
 # 225mg dose
-D225 <- pregabalin_year %>% 
-    select(year, prescriptions_225, pills_225, average_daily_dose_225) %>% 
-    rename(number_of_prescriptions = prescriptions_225,
-           number_of_pills_prescribed = pills_225,
-           average_daily_dose_mg = average_daily_dose_225)
+## Number of prescription items by period
+pregabalin_225 %>% 
+    select(period,
+           prescriptions_225) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 225mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/225_table_number-of-prescription-items.pdf')
+
+p225_01 <- pregabalin_225 %>% 
+    select(period,
+           prescriptions_225) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_225,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.225, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 225mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/225_figure_number-of-prescription-items.png',
+       plot = p225_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_225 %>% 
+    select(period,
+           pills_225) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 225mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/225_table_number-of-pills-dispensed.pdf')
+
+p225_02 <- pregabalin_225 %>% 
+    select(period,
+           pills_225) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_225,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.225, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 225mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/225_figure_number-of-pills-dispensed.png',
+       plot = p225_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_225 %>% 
+    select(period,
+           total_prescribed_dose_225) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 225mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/225_table_total-quantity-dispensed.pdf')
+
+p225_03 <- pregabalin_225 %>% 
+    select(period,
+           total_prescribed_dose_225) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_225,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.225, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 225mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/225_figure_total-quantity-dispensed.png',
+       plot = p225_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_225 %>% 
+    select(period,
+           total_dose_per_prescription_225) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 225mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/225_table_dose-per-prescription.pdf')
+
+p225_04 <- pregabalin_225 %>% 
+    select(period,
+           total_dose_per_prescription_225) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_225,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.225, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 225mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/225_figure_dose-per-prescription.png',
+       plot = p225_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_225 %>% 
+    select(period,
+           average_daily_dose_225) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 225mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/225_table_average-daily-dose.pdf')
+
+p225_05 <- pregabalin_225 %>% 
+    select(period,
+           average_daily_dose_225) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_225,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.225, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 225mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/225_figure_average-daily-dose.png',
+       plot = p225_05,
+       height = 6,
+       width = 7)
 
 # 300mg dose
-D300 <- pregabalin_year %>% 
-    select(year, prescriptions_300, pills_300, average_daily_dose_300) %>% 
-    rename(number_of_prescriptions = prescriptions_300,
-           number_of_pills_prescribed = pills_300,
-           average_daily_dose_mg = average_daily_dose_300)
+## Number of prescription items by period
+pregabalin_300 %>% 
+    select(period,
+           prescriptions_300) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 300mg: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/300_table_number-of-prescription-items.pdf')
+
+p300_01 <- pregabalin_300 %>% 
+    select(period,
+           prescriptions_300) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_300,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.300, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 300mg: Number of prescription items per month',
+         x = NULL,
+         y = 'Number of prescriptions') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/300_figure_number-of-prescription-items.png',
+       plot = p300_01,
+       height = 6,
+       width = 7)
+    
+## Number of pills dispensed per month
+pregabalin_300 %>% 
+    select(period,
+           pills_300) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 300mg: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/300_table_number-of-pills-dispensed.pdf')
+
+p300_02 <- pregabalin_300 %>% 
+    select(period,
+           pills_300) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_300,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.300, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 300mg: Number of pills dispensed per month',
+         x = NULL,
+         y = 'Number of pills') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/300_figure_number-of-pills-dispensed.png',
+       plot = p300_02,
+       height = 6,
+       width = 7)
+
+## Total dose prescribed per month
+pregabalin_300 %>% 
+    select(period,
+           total_prescribed_dose_300) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 300mg: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/300_table_total-quantity-dispensed.pdf')
+
+p300_03 <- pregabalin_300 %>% 
+    select(period,
+           total_prescribed_dose_300) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_prescribed_dose_300,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.300, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 300mg: Total quantity dispensed',
+         x = NULL,
+         y = 'Quantity (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/300_figure_total-quantity-dispensed.png',
+       plot = p300_03,
+       height = 6,
+       width = 7)
+
+## Monthly dose per prescription
+pregabalin_300 %>% 
+    select(period,
+           total_dose_per_prescription_300) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 300mg: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/300_table_dose-per-prescription.pdf')
+
+p300_04 <- pregabalin_300 %>% 
+    select(period,
+           total_dose_per_prescription_300) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = total_dose_per_prescription_300,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.300, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 300mg: Monthly dose per prescription item',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/300_figure_dose-per-prescription.png',
+       plot = p300_04,
+       height = 6,
+       width = 7)
+
+## Average daily dose
+pregabalin_300 %>% 
+    select(period,
+           average_daily_dose_300) %>% 
+    group_by(period) %>% 
+    my_skim() %>% 
+    yank(skim_type = 'numeric') %>% 
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin 300mg: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/300_table_average-daily-dose.pdf')
+
+p300_05 <- pregabalin_300 %>% 
+    select(period,
+           average_daily_dose_300) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_300,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.300, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin 300mg: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
+         x = NULL,
+         y = 'Dose (mg)') +
+    scale_y_continuous(labels = function(x){format(x, 
+                                                   big.mark = ' ', 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
+
+ggsave(filename = 'figures/pregabalin/300_figure_average-daily-dose.png',
+       plot = p300_05,
+       height = 6,
+       width = 7)
 
 # Total
-total <- pregabalin_year %>% 
-    select(year, prescriptions_total, pills_total, weighted_average_daily_dose_total) %>% 
-    rename(number_of_prescriptions = prescriptions_total,
-           number_of_pills_prescribed = pills_total,
-           average_daily_dose_mg = weighted_average_daily_dose_total)
-    
-#-- Summary stats by year --#
-# 25mg dose
-## Tabulated
-D25 %>% 
-    group_by(year) %>% 
+## Number of prescription items by period
+pregabalin_total %>% 
+    select(period,
+           prescriptions_total) %>% 
+    group_by(period) %>% 
     my_skim() %>% 
     yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin total: Number of prescription items per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/total_table_number-of-prescription-items.pdf')
 
-## Plotted
-### Number of prescriptions
-plot_D25_prescriptions <- ggplot(data = D25) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
+p_total_01 <- pregabalin_total %>% 
+    select(period,
+           prescriptions_total) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = prescriptions_total,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin total: Number of prescription items per month',
          x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
+         y = 'Number of prescriptions') +
     scale_y_continuous(labels = function(x){format(x, 
                                                    big.mark = ' ', 
                                                    small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+    scale_colour_tableau() +
+    scale_fill_tableau()
 
-### Number of pills prescribed
-plot_D25_pills <- ggplot(data = D25) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+ggsave(filename = 'figures/pregabalin/total_figure_number-of-prescription-items.png',
+       plot = p_total_01,
+       height = 6,
+       width = 7)
 
-### Average daily dose
-plot_D25_dose <- ggplot(data = D25) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D25_combined <- plot_D25_prescriptions + 
-    plot_D25_pills + 
-    plot_D25_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 25mg dose')
-
-plot_D25_combined
-
-ggsave(filename = 'figures/pregabalin/01_descriptive_25mg-dose.png',
-       plot = plot_D25_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 50mg dose
-## Tabulated
-D50 %>% 
-    group_by(year) %>% 
+## Number of pills dispensed per month
+pregabalin_total %>% 
+    select(period,
+           pills_total) %>% 
+    group_by(period) %>% 
     my_skim() %>% 
     yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin total: Number of pills dispensed per month',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/total_table_number-of-pills-dispensed.pdf')
 
-## Plotted
-### Number of prescriptions
-plot_D50_prescriptions <- ggplot(data = D50) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
+p_total_02 <- pregabalin_total %>% 
+    select(period,
+           pills_total) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = pills_total,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin total: Number of pills dispensed per month',
          x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
+         y = 'Number of pills') +
     scale_y_continuous(labels = function(x){format(x, 
                                                    big.mark = ' ', 
                                                    small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+    scale_colour_tableau() +
+    scale_fill_tableau()
 
-### Number of pills prescribed
-plot_D50_pills <- ggplot(data = D50) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+ggsave(filename = 'figures/pregabalin/total_figure_number-of-pills-dispensed.png',
+       plot = p_total_02,
+       height = 6,
+       width = 7)
 
-### Average daily dose
-plot_D50_dose <- ggplot(data = D50) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D50_combined <- plot_D50_prescriptions + 
-    plot_D50_pills + 
-    plot_D50_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 50mg dose')
-
-plot_D50_combined
-
-ggsave(filename = 'figures/pregabalin/02_descriptive_50mg-dose.png',
-       plot = plot_D50_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 75mg dose
-## Tabulated
-D75 %>% 
-    group_by(year) %>% 
+## Total dose prescribed per month
+pregabalin_total %>% 
+    select(period,
+           dose_total) %>% 
+    group_by(period) %>% 
     my_skim() %>% 
     yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin total: Total quantity dispensed (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/total_table_total-quantity-dispensed.pdf')
 
-## Plotted
-### Number of prescriptions
-plot_D75_prescriptions <- ggplot(data = D75) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
+p_total_03 <- pregabalin_total %>% 
+    select(period,
+           dose_total) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = dose_total,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin total: Total quantity dispensed',
          x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
+         y = 'Quantity (mg)') +
     scale_y_continuous(labels = function(x){format(x, 
                                                    big.mark = ' ', 
                                                    small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+    scale_colour_tableau() +
+    scale_fill_tableau()
 
-### Number of pills prescribed
-plot_D75_pills <- ggplot(data = D75) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+ggsave(filename = 'figures/pregabalin/total_figure_total-quantity-dispensed.png',
+       plot = p_total_03,
+       height = 6,
+       width = 7)
 
-### Average daily dose
-plot_D75_dose <- ggplot(data = D75) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D75_combined <- plot_D75_prescriptions + 
-    plot_D75_pills + 
-    plot_D75_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 75mg dose')
-
-plot_D75_combined
-
-ggsave(filename = 'figures/pregabalin/03_descriptive_75mg-dose.png',
-       plot = plot_D75_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 100mg dose
-## Tabulated
-D100 %>% 
-    group_by(year) %>% 
+## Average monthly dose per prescription
+pregabalin_total %>% 
+    select(period,
+           dose_per_prescription_total) %>% 
+    group_by(period) %>% 
     my_skim() %>% 
     yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin total: Monthly dose per prescription item (mg)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/total_table_dose-per-prescription.pdf')
 
-## Plotted
-### Number of prescriptions
-plot_D100_prescriptions <- ggplot(data = D100) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
-         x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Number of pills prescribed
-plot_D100_pills <- ggplot(data = D100) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Average daily dose
-plot_D100_dose <- ggplot(data = D100) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
+p_total_04 <- pregabalin_total %>% 
+    select(period,
+           dose_per_prescription_total) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = dose_per_prescription_total,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin total: Monthly dose per prescription item',
          x = NULL,
          y = 'Dose (mg)') +
-    scale_fill_tableau() +
     scale_y_continuous(labels = function(x){format(x, 
                                                    big.mark = ' ', 
-                                                   small.mark = ' ')}) 
+                                                   small.mark = ' ')}) +
+    scale_colour_tableau() +
+    scale_fill_tableau()
 
-plot_D100_combined <- plot_D100_prescriptions + 
-    plot_D100_pills + 
-    plot_D100_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 100mg dose')
+ggsave(filename = 'figures/pregabalin/total_figure_dose-per-prescription.png',
+       plot = p_total_04,
+       height = 6,
+       width = 7)
 
-plot_D100_combined
-
-ggsave(filename = 'figures/pregabalin/04_descriptive_100mg-dose.png',
-       plot = plot_D100_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 150mg dose
-## Tabulated
-D150 %>% 
-    group_by(year) %>% 
+## Average daily dose
+pregabalin_total %>% 
+    select(period,
+           average_daily_dose_total) %>% 
+    group_by(period) %>% 
     my_skim() %>% 
     yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
+    select(-skim_variable, -n_missing, -n_complete) %>% 
+    kbl(caption = 'Pregabalin total: Average daily dose (mg, assumes 30-day prescriptions)',
+        digits = 0,
+        col.names = c('Period', 'Mean', 'SD', 
+                      'Min', 'Q1', 'Median', 'Q3', 'Max')) %>% 
+    kable_styling(bootstrap_options = 'striped') %>% 
+    save_kable(file = 'figures/pregabalin/total_table_average-daily-dose.pdf')
 
-## Plotted
-### Number of prescriptions
-plot_D150_prescriptions <- ggplot(data = D150) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
-         x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Number of pills prescribed
-plot_D150_pills <- ggplot(data = D150) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Average daily dose
-plot_D150_dose <- ggplot(data = D150) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
+p_total_05 <- pregabalin_total %>% 
+    select(period,
+           average_daily_dose_total) %>% 
+    ggplot(data = .) +
+    aes(x = period,
+        y = average_daily_dose_total,
+        colour = period,
+        fill = period) +
+    geom_boxplot(alpha = 0.6,
+                 outlier.size = -Inf) +
+    geom_point(size = 3,
+               position = position_jitter(width = 0.50, 
+                                          height = 0)) +
+    labs(title = 'Pregabalin total: Average daily dose*',
+         caption = '* Assumes 30-day prescriptions',
          x = NULL,
          y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D150_combined <- plot_D150_prescriptions + 
-    plot_D150_pills + 
-    plot_D150_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 150mg dose')
-
-plot_D150_combined
-
-ggsave(filename = 'figures/pregabalin/05_descriptive_150mg-dose.png',
-       plot = plot_D150_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 200mg dose
-## Tabulated
-D200 %>% 
-    group_by(year) %>% 
-    my_skim() %>% 
-    yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
-
-## Plotted
-### Number of prescriptions
-plot_D200_prescriptions <- ggplot(data = D200) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
-         x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
     scale_y_continuous(labels = function(x){format(x, 
                                                    big.mark = ' ', 
                                                    small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
+    scale_colour_tableau() +
+    scale_fill_tableau()
 
-### Number of pills prescribed
-plot_D200_pills <- ggplot(data = D200) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Average daily dose
-plot_D200_dose <- ggplot(data = D200) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D200_combined <- plot_D200_prescriptions + 
-    plot_D200_pills + 
-    plot_D200_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 200mg dose')
-
-plot_D200_combined
-
-ggsave(filename = 'figures/pregabalin/06_descriptive_200mg-dose.png',
-       plot = plot_D200_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 225mg dose
-## Tabulated
-D225 %>% 
-    group_by(year) %>% 
-    my_skim() %>% 
-    yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
-
-## Plotted
-### Number of prescriptions
-plot_D225_prescriptions <- ggplot(data = D225) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
-         x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Number of pills prescribed
-plot_D225_pills <- ggplot(data = D225) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Average daily dose
-plot_D225_dose <- ggplot(data = D225) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D225_combined <- plot_D225_prescriptions + 
-    plot_D225_pills + 
-    plot_D225_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 225mg dose')
-
-plot_D225_combined
-
-ggsave(filename = 'figures/pregabalin/07_descriptive_225mg-dose.png',
-       plot = plot_D225_combined,
-       height = 12.5,
-       width = 7.5)
-
-# 300mg dose
-## Tabulated
-D300 %>% 
-    group_by(year) %>% 
-    my_skim() %>% 
-    yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
-
-## Plotted
-### Number of prescriptions
-plot_D300_prescriptions <- ggplot(data = D300) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
-         x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Number of pills prescribed
-plot_D300_pills <- ggplot(data = D300) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Average daily dose
-plot_D300_dose <- ggplot(data = D300) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_D300_combined <- plot_D300_prescriptions + 
-    plot_D300_pills + 
-    plot_D300_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: 300mg dose')
-
-plot_D300_combined
-
-ggsave(filename = 'figures/pregabalin/08_descriptive_300mg-dose.png',
-       plot = plot_D300_combined,
-       height = 12.5,
-       width = 7.5)
-
-# totalmg dose
-## Tabulated
-total %>% 
-    group_by(year) %>% 
-    my_skim() %>% 
-    yank(skim_type = 'numeric') %>% 
-    kable(digits = 0)
-
-## Plotted
-### Number of prescriptions
-plot_total_prescriptions <- ggplot(data = total) +
-    aes(x = factor(year),
-        y = number_of_prescriptions,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of prescriptions',
-         x = NULL,
-         y = 'Prescriptions') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Number of pills prescribed
-plot_total_pills <- ggplot(data = total) +
-    aes(x = factor(year),
-        y = number_of_pills_prescribed,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Number of pills prescribed',
-         x = NULL,
-         y = 'Pills') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) +
-    theme(axis.text.x = element_blank(),
-          axis.line.x = element_blank(),
-          axis.ticks.x = element_blank())
-
-### Average daily dose
-plot_total_dose <- ggplot(data = total) +
-    aes(x = factor(year),
-        y = average_daily_dose_mg,
-        fill = factor(year)) +
-    geom_boxplot(outlier.size = -Inf) +
-    geom_point(position = position_jitter(height = 0, 
-                                          width = 0.25),
-               shape = 21,
-               size = 2) +
-    labs(title = 'Average daily dose',
-         x = NULL,
-         y = 'Dose (mg)') +
-    scale_fill_tableau() +
-    scale_y_continuous(labels = function(x){format(x, 
-                                                   big.mark = ' ', 
-                                                   small.mark = ' ')}) 
-
-plot_total_combined <- plot_total_prescriptions + 
-    plot_total_pills + 
-    plot_total_dose +
-    plot_layout(ncol = 1) +
-    plot_annotation(title = 'Pregabalin: total dose')
-
-plot_total_combined
-
-ggsave(filename = 'figures/pregabalin/09_descriptive_total-dose.png',
-       plot = plot_total_combined,
-       height = 12.5,
-       width = 7.5)
+ggsave(filename = 'figures/pregabalin/total_figure_average-daily-dose.png',
+       plot = p_total_05,
+       height = 6,
+       width = 7)
