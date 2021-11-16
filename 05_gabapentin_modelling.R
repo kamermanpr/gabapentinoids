@@ -664,7 +664,7 @@ publication_plot <- plot_prescriptions_simple2 +
     plot_layout(ncol = 2, byrow = FALSE) +
     plot_annotation(tag_levels = 'A')
 
-ggsave('figures/gabapentin/01_gabapentin_publication-plot.png',
+ggsave('figures/publication-plot_gabapentin.png',
        plot = publication_plot,
        height = 15,
        width = 16)
