@@ -3,6 +3,3 @@
 .RData
 .Ruserdata
 manuscript/
-*.Rmd
-*.pdf
-*.csl
