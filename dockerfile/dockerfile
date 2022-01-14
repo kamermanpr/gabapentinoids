@@ -1,0 +1,20 @@
+#-- The latest image can be downloaded from Docker Hub --#
+# docker pull kamermanpr/docker-gabapentinoids
+
+#-- Run command --#
+# docker run --name pain -d -p 8787:8787 -e USER=user -e PASSWORD=password kamermanpr/docker-gabapentinoids
+
+#-- Login to RStudio --#
+# In your browser, navigate to: localhost:8787
+# Username: user
+# Password: password
+
+#-- Get the verse rocker image --#
+
+FROM rocker/verse:4.1.2
+
+MAINTAINER Peter Kamerman <peter.kamerman@gmail.com>
+
+#-- Install extra packages --#
+
+RUN Rscript -e "install.packages(c('ggthemes', 'kableExtra', 'lspline', 'moderndive', 'MuMln', 'patchwork', 'quantreg', 'skimr'), dependencies = TRUE)"
