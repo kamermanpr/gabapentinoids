@@ -17,4 +17,4 @@ MAINTAINER Peter Kamerman <peter.kamerman@gmail.com>
 
 #-- Install extra packages --#
 
-RUN Rscript -e "install.packages(c('ggthemes', 'kableExtra', 'lspline', 'moderndive', 'MuMln', 'patchwork', 'quantreg', 'skimr'), dependencies = TRUE)"
+RUN Rscript -e "install.packages(c('ggthemes', 'kableExtra', 'lspline', 'moderndive', 'MuMIn', 'patchwork', 'quantreg', 'skimr'), dependencies = TRUE)"
