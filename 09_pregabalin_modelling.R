@@ -14,6 +14,7 @@ library(quantreg)
 library(lspline)
 library(patchwork)
 library(moderndive)
+library(MuMIn)
 
 #-- Set ggplot theme --#
 theme_set(new = theme_minimal(base_size = 18) +
@@ -27,6 +28,32 @@ theme_set(new = theme_minimal(base_size = 18) +
                                              size = 18),
                     axis.line = element_line(size = 0.5),
                     axis.ticks = element_line(size = 0.5)))
+
+#-- Define functions --#
+# Evidence ratio
+## x = vector of relative likelihood for the models (best model first)
+## y = vector of names for comparisons
+evidence_ratio = function(x = vec_rl, y = vec_names) {
+    er <- vector(mode = 'numeric', length = length(vec_names))
+    for(i in 1:length(vec_names)){
+        er[[i]] <- vec_rl[[1]] / vec_rl[[i]]
+    }
+    names(er) <- vec_names
+    return(er)
+}
+
+# Evidence weights
+## x = relative likelihood for the models (best model first)
+## y = vector of comparison names
+evidence_weight <- function(x = vec_rl, y = vec_names) {
+    sum_rel = sum(vec_rl)
+    wt = vector(mode = 'numeric', length = length(vec_names))
+    for(i in 1:length(vec_names)){
+        wt[[i]] <- vec_rl[[i]] / sum_rel
+        names(wt) <- vec_names 
+    }
+    return(wt)
+}
 
 #-- Import data --#
 pregabalin <- read_csv('data-clean/pregabalin_analysis-set.csv')
@@ -77,7 +104,7 @@ plot_prescriptions_simple <- ggplot(data = fitted_prescriptions_simple) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Simple',
+    labs(title = paste0('Simple (AICc =  ', round(AICc(prescriptions_simple), 2), ')'),
          y = expression('Number of prescription items (10'^4*')'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -118,7 +145,7 @@ plot_prescriptions_spline <- ggplot(data = fitted_prescriptions_spline) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Spline (knots = 1)',
+    labs(title = paste0('Spline (knots = 1) (AICc =  ', round(AICc(prescriptions_spline), 2), ')'),
          y = expression('Number of prescription items (10'^4*')'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -134,8 +161,12 @@ plot_prescriptions_spline <- ggplot(data = fitted_prescriptions_spline) +
 prescriptions_parallel <- rq(prescriptions_total ~ month + period,
                              data = data)
 
-# Inspect model coefficients
-tidy(prescriptions_parallel)
+# Inspect model coefficients 
+# Extremely high upper limit to CI, use boot method
+tidy(prescriptions_parallel, 
+     se.type = 'boot', 
+     R = 99999, 
+     conf.int = TRUE)
 
 # Get fitted values
 fitted_prescriptions_parallel <- data.frame(month = 1:48,
@@ -158,7 +189,7 @@ plot_prescriptions_parallel <- ggplot(data = fitted_prescriptions_parallel) +
                          size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Parallel slopes',
+    labs(title = paste0('Parallel slopes (AICc =  ', round(AICc(prescriptions_parallel), 2), ')'),
          y = expression('Number of prescription items (10'^4*')'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -171,17 +202,41 @@ plot_prescriptions_parallel <- ggplot(data = fitted_prescriptions_parallel) +
 
 #-- Compare models --#
 # Get AIC for each model
-AIC(prescriptions_simple)
-AIC(prescriptions_spline)
-AIC(prescriptions_parallel)
+AICc(prescriptions_simple)
+AICc(prescriptions_spline)
+AICc(prescriptions_parallel)
 
 # Calculate difference in AIC (vs parallel slopes regression, the simplest model)
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
-AIC(prescriptions_spline) - AIC(prescriptions_parallel)
-AIC(prescriptions_simple) - AIC(prescriptions_parallel)
+prescription_delta_aic0 <- AICc(prescriptions_parallel) - AICc(prescriptions_parallel)
+prescription_delta_aic0
+prescription_delta_aic1 <- AICc(prescriptions_spline) - AICc(prescriptions_parallel)
+prescription_delta_aic1
+prescription_delta_aic2 <- AICc(prescriptions_simple) - AICc(prescriptions_parallel)
+prescription_delta_aic2
 
-# No significant information loss between simple and parallel, 
-# or spline and parallel (delta AIC < 2).
+# Relative likelihoods
+rl0 <- exp(-1/2 * prescription_delta_aic0)
+rl0
+
+rl1 <- exp(-1/2 * prescription_delta_aic1)
+rl1
+
+rl2 <- exp(-1/2 * prescription_delta_aic2)
+rl2
+
+# Get data
+vec_rl <- c(rl0, rl1, rl2)
+
+vec_names <- c('parallel v parallel', 'parallel v spline', 'parallel vs simple')
+
+# Evidence ratio 
+evidence_ratio(x = vec_rel,
+               y = vec_names)
+
+# Evidence weights
+evidence_weight(x = vec_rl,
+                y = vec_names)
 
 #######################################
 # Number of pills dispensed per month #
@@ -215,7 +270,7 @@ plot_pills_simple <- ggplot(data = fitted_pills_simple) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Simple',
+    labs(title = paste0('Simple (AICc =  ', round(AICc(pills_simple), 2), ')'),
          y = NULL,
          x = NULL) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -260,7 +315,7 @@ plot_pills_spline <- ggplot(data = fitted_pills_spline) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Spline (knots = 1)',
+    labs(title = paste0('Spline (knots = 1) (AICc =  ', round(AICc(pills_spline), 2), ')'),
          y = expression('Number of pills (10'^6*')'),
          x = NULL) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -304,7 +359,7 @@ plot_pills_parallel <- ggplot(data = fitted_pills_parallel) +
                          size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Parallel slopes',
+    labs(title = paste0('Parallel slopes (AICc =  ', round(AICc(pills_parallel), 2), ')'),
          y = NULL,
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -317,18 +372,42 @@ plot_pills_parallel <- ggplot(data = fitted_pills_parallel) +
 
 #-- Compare models --#
 # Get AIC for each model
-AIC(pills_simple)
-AIC(pills_spline)
-AIC(pills_parallel)
+AICc(pills_simple)
+AICc(pills_spline)
+AICc(pills_parallel)
 
-# Calculate difference in AIC (vs parallel slopes regression, the simplest model))
+# Calculate difference in AIC (vs parallel slopes regression, the simplest model)
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
-AIC(pills_spline) - AIC(pills_parallel)
-AIC(pills_simple) - AIC(pills_parallel)
 
-# Significant information loss between simple and parallel models,
-# and a significant loss of information between the spline and 
-# parallel slopes model (delta AIC > 2).
+pills_delta_aic0 <- AICc(pills_parallel) - AICc(pills_parallel)
+pills_delta_aic0
+pills_delta_aic1 <- AICc(pills_spline) - AICc(pills_parallel)
+pills_delta_aic1
+pills_delta_aic2 <- AICc(pills_simple) - AICc(pills_parallel)
+pills_delta_aic2
+
+# Relative likelihoods
+rl0 <- exp(-1/2 * pills_delta_aic0)
+rl0
+
+rl1 <- exp(-1/2 * pills_delta_aic1)
+rl1
+
+rl2 <- exp(-1/2 * pills_delta_aic2)
+rl2
+
+# Get data
+vec_rl <- c(rl0, rl1, rl2)
+
+vec_names <- c('parallel v parallel', 'parallel v spline', 'parallel vs simple')
+
+# Evidence ratio 
+evidence_ratio(x = vec_rel,
+               y = vec_names)
+
+# Evidence weights
+evidence_weight(x = vec_rl,
+                y = vec_names)
 
 #################################
 # Monthly total dose prescribed #
@@ -362,7 +441,7 @@ plot_quantity_simple <- ggplot(data = fitted_quantity_simple) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Simple',
+    labs(title = paste0('Simple (AICc =  ', round(AICc(quantity_simple), 2), ')'),
          y = NULL,
          x = NULL) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -407,7 +486,7 @@ plot_quantity_spline <- ggplot(data = fitted_quantity_spline) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Spline (knots = 1)',
+    labs(title = paste0('Spline (knots = 1) (AICc =  ', round(AICc(quantity_spline), 2), ')'),
          y = expression('Total dose dispensed (10'^10*' mg)'),
          x = NULL) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -451,7 +530,7 @@ plot_quantity_parallel <- ggplot(data = fitted_quantity_parallel) +
                          size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Parallel slopes',
+    labs(title = paste0('Parallel slopes (AICc =  ', round(AICc(quantity_parallel), 2), ')'),
          y = NULL,
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -464,18 +543,42 @@ plot_quantity_parallel <- ggplot(data = fitted_quantity_parallel) +
 
 #-- Compare models --#
 # Get AIC for each model
-AIC(quantity_simple)
-AIC(quantity_spline)
-AIC(quantity_parallel)
+AICc(quantity_simple)
+AICc(quantity_spline)
+AICc(quantity_parallel)
 
-# Calculate difference in AIC (vs simple regression)
+# Calculate difference in AIC (vs parallel slopes regression, the simplest model)
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
-AIC(quantity_simple) - AIC(quantity_parallel)
-AIC(quantity_spline) - AIC(quantity_parallel)
 
-# Significant information loss between simple and parallel (delta AIC > 2), 
-# and a significant loss of information between the parallel slopes and 
-# spline model.
+quantity_delta_aic0 <- AICc(quantity_parallel) - AICc(quantity_parallel)
+quantity_delta_aic0
+quantity_delta_aic1 <- AICc(quantity_spline) - AICc(quantity_parallel)
+quantity_delta_aic1
+quantity_delta_aic2 <- AICc(quantity_simple) - AICc(quantity_parallel)
+quantity_delta_aic2
+
+# Relative likelihoods
+rl0 <- exp(-1/2 * quantity_delta_aic0)
+rl0
+
+rl1 <- exp(-1/2 * quantity_delta_aic1)
+rl1
+
+rl2 <- exp(-1/2 * quantity_delta_aic2)
+rl2
+
+# Get data
+vec_rl <- c(rl0, rl1, rl2)
+
+vec_names <- c('parallel v parallel', 'parallel v spline', 'parallel vs simple')
+
+# Evidence ratio 
+evidence_ratio(x = vec_rel,
+               y = vec_names)
+
+# Evidence weights
+evidence_weight(x = vec_rl,
+                y = vec_names)
 
 ######################################
 # Monthly dose per prescription item #
@@ -509,7 +612,7 @@ plot_dose_simple <- ggplot(data = fitted_dose_simple) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Simple',
+    labs(title = paste0('Simple (AICc =  ', round(AICc(dose_simple), 2), ')'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -550,7 +653,7 @@ plot_dose_spline <- ggplot(data = fitted_dose_spline) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Spline (knots = 1)',
+    labs(title = paste0('Spline (knots = 1) (AICc =  ', round(AICc(dose_spline), 2), ')'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -590,7 +693,7 @@ plot_dose_parallel <- ggplot(data = fitted_dose_parallel) +
                          size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = 'Parallel slopes',
+    labs(title = paste0('Parallel slopes (AICc =  ', round(AICc(dose_parallel), 2), ')'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
@@ -603,18 +706,42 @@ plot_dose_parallel <- ggplot(data = fitted_dose_parallel) +
 
 #-- Compare models --#
 # Get AIC for each model
-AIC(dose_simple)
-AIC(dose_spline)
-AIC(dose_parallel)
+AICc(dose_simple)
+AICc(dose_spline)
+AICc(dose_parallel)
 
-# Calculate difference in AIC (vs parallel slopes regression)
+# Calculate difference in AIC (vs parallel slopes regression, the simplest model)
 ## Values < 2 indicate no meaningful information loss (Burnham & Anderson 2004)
-AIC(dose_simple) - AIC(dose_spline)
-AIC(dose_parallel) - AIC(dose_spline)
 
-# Significant information loss between simple and spline (delta AIC > 2), 
-# and a significant loss of information between the parallel slopes and 
-# spline model.
+dose_delta_aic0 <- AICc(dose_parallel) - AICc(dose_spline)
+dose_delta_aic0
+dose_delta_aic1 <- AICc(dose_spline) - AICc(dose_spline)
+dose_delta_aic1
+dose_delta_aic2 <- AICc(dose_simple) - AICc(dose_spline)
+dose_delta_aic2
+
+# Relative likelihoods
+rl0 <- exp(-1/2 * dose_delta_aic0)
+rl0
+
+rl1 <- exp(-1/2 * dose_delta_aic1)
+rl1
+
+rl2 <- exp(-1/2 * dose_delta_aic2)
+rl2
+
+# Get data
+vec_rl <- c(rl1, rl0, rl2)
+
+vec_names <- c('spline v spline', 'spline v parallel', 'spline vs simple')
+
+# Evidence ratio 
+evidence_ratio(x = vec_rel,
+               y = vec_names)
+
+# Evidence weights
+evidence_weight(x = vec_rl,
+                y = vec_names)
 
 ########################
 #   Publication plot   #
