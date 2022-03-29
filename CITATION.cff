@@ -1,5 +1,4 @@
 cff-version: 1.2.0
-message: "Please cite the analysis scripts and data as follows:"
 authors:
 - family-names: "Kamerman"
   given-names: "Peter"
