@@ -1,8 +1,8 @@
 #-- The latest image can be downloaded from Docker Hub --#
-# docker pull kamermanpr/docker-gabapentinoids
+# docker pull kamermanpr/gabapentinoids
 
 #-- Run command --#
-# docker run --name pain -d -p 8787:8787 -e USER=user -e PASSWORD=password kamermanpr/docker-gabapentinoids
+# docker run --name pain -d -p 8787:8787 -e USER=user -e PASSWORD=password kamermanpr/gabapentinoids
 
 #-- Login to RStudio --#
 # In your browser, navigate to: localhost:8787
