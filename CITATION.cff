@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite the analysis scripts and data as follows:"
+authors:
+- family-names: "Kamerman"
+  given-names: "Peter"
+title: "Gabapentinoids"
+version: 1.0
+doi: 10.5281/zenodo.6394533
+date-released: 2022-03-29
+url: "https://github.com/kamermanpr/gabapentinoids"
