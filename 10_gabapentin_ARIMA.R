@@ -269,7 +269,7 @@ pacf(ts_dose2, lag.max = 24)
 # Auto build model
 mod_dose2_auto <- auto.arima(y = ts_dose2,
                              xreg = cbind(ramped, stepped), # predictors of y
-                             stationary = TRUE, # Based on ADF test
+                             stationary = FALSE, # Based on ADF test
                              seasonal = TRUE, # Possible seasonal component based on ACF
                              stepwise = FALSE,
                              trace = TRUE)
