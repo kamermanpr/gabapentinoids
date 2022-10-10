@@ -1,6 +1,6 @@
 ############################################################
 #                                                          #
-#              ARIMA modelling for pregabalin              #
+#               ARIMA modelling for pregabalin             #
 #                                                          #
 ############################################################
 
@@ -38,52 +38,55 @@ ts_prescription <- ts(data$prescriptions_total,
                       start = c(2017, 4),
                       end = c(2021, 3))
 
+ts_prescription_pre <- window(ts_prescription, end = c(2019, 3))
+
 #-- Plot time series --#
-plot(ts_prescription)
+plot(ts_prescription_pre)
 
 #-- Check whether stationary --#
 # Significant outcome indicates stationary time series
 # Augmented Dickey-Fuller Test
-adf.test(ts_prescription) 
+adf.test(ts_prescription_pre) 
 
 #-- Check whether seasonal --#
 # ETS interpretation: Error, Trend, Seasonal components
 # Looking to see whether Seasonal component is: 
 # 'None; N', 'Additive; A', or 'Multiplicative; M'
-ets(ts_prescription)
+ets(ts_prescription_pre)
 
-# Double-check seasonality with ACF and PACF
-acf(ts_prescription, lag.max = 24)
-
-pacf(ts_prescription, lag.max = 24)
-
-#-- Construct variables for ramp and step change at April 2019 --#
-# Step
-stepped <- c(rep(x = 0, times = 24), 
-             rep(x = 1, times = 24))
-
-# Ramp
-ramped <- c(rep(x = 0, times = 24), 
-            seq(from = 1, to = 24))
+# Double-check seasonality with ACF
+acf(ts_prescription_pre, lag.max = 12)
 
 #-- Search for best model --#
 # Auto build model
-mod_prescription_auto <- auto.arima(y = ts_prescription,
-                                    xreg = cbind(stepped, ramped), # predictors of y
-                                    stationary = FALSE, # Based on ADF test
-                                    seasonal = TRUE, # A lot of auto-correlation
+mod_prescription_auto <- auto.arima(y = ts_prescription_pre,
+                                    stationary = FALSE,
+                                    seasonal = FALSE,
                                     stepwise = FALSE,
-                                    trace = TRUE)
+                                    trace = TRUE,
+                                    method = 'CSS-ML')
 
-# Check residuals
-checkresiduals(mod_prescription_auto, lag = 24)
+mod_prescription_auto2 <- auto.arima(y = ts_prescription_pre,
+                                     stationary = FALSE,
+                                     D = 1, # Force seasonal component
+                                     stepwise = FALSE,
+                                     trace = TRUE,
+                                     method = 'CSS-ML')
+
+mod_prescription_auto
+mod_prescription_auto2 # Model with seasonal component has a better fit based on AIC
+
+# Check residuals (LB test null = no autocorrelation)
+## Repeat auto.arima until LB test comes back not significant
+checkresiduals(mod_prescription_auto2)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
-mod_prescription_final <- Arima(window(ts_prescription, end = c(2019, 3)), 
-                                order = c(2, 1, 0), 
-                                seasonal = list(order = c(1, 0, 0), 
+mod_prescription_final <- Arima(ts_prescription_pre, 
+                                order = c(0, 0, 0), 
+                                seasonal = list(order = c(0, 1, 0), 
                                                 period = 12),
+                                include.drift = TRUE,
                                 method = 'ML')
 
 # Forecast values >= April 2019
@@ -111,46 +114,55 @@ ts_pills <- ts(data$pills_total,
                start = c(2017, 4),
                end = c(2021, 3))
 
+ts_pills_pre <- window(ts_pills, end = c(2019, 3))
+
 #-- Plot time series --#
-plot(ts_pills)
+plot(ts_pills_pre)
 
 #-- Check whether stationary --#
 # Significant outcome indicates stationary time series
 # Augmented Dickey-Fuller Test
-adf.test(ts_pills) 
+adf.test(ts_pills_pre) 
 
 #-- Check whether seasonal --#
 # ETS interpretation: Error, Trend, Seasonal components
 # Looking to see whether Seasonal component is: 
 # 'None; N', 'Additive; A', or 'Multiplicative; M'
-ets(ts_pills)
+ets(ts_pills_pre)
 
-# Double-check seasonality with ACF and PACF
-acf(ts_pills, lag.max = 24)
-
-pacf(ts_pills, lag.max = 24)
-
-#-- Construct variables for ramp and step change at April 2019 --#
-# See 'Monthly number of prescription items' above
+# Double-check seasonality with ACF
+acf(ts_pills_pre, lag.max = 12)
 
 #-- Search for best model --#
 # Auto build model
-mod_pills_auto <- auto.arima(y = ts_pills,
-                             xreg = cbind(stepped, ramped), # predictors of y
-                             stationary = FALSE, # Based on ADF test
-                             seasonal = TRUE, # Possible seasonal component based on ACF
+mod_pills_auto <- auto.arima(y = ts_pills_pre,
+                             stationary = FALSE,
+                             seasonal = FALSE,
                              stepwise = FALSE,
-                             trace = TRUE)
+                             trace = TRUE,
+                             method = 'CSS-ML')
 
-# Check residuals
-checkresiduals(mod_pills_auto, lag = 24)
+mod_pills_auto2 <- auto.arima(y = ts_pills_pre,
+                              stationary = FALSE,
+                              D = 1, # Force seasonal component
+                              stepwise = FALSE,
+                              trace = TRUE,
+                              method = 'CSS-ML')
+
+mod_pills_auto
+mod_pills_auto2 # Model with seasonal component has a better fit based on AIC
+
+# Check residuals (LB test null = no autocorrelation)
+## Repeat auto.arima until LB test comes back not significant
+checkresiduals(mod_pills_auto2)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
-mod_pills_final <- Arima(window(ts_pills, end = c(2019, 3)), 
-                         order = c(2, 1, 0), 
-                         seasonal = list(order = c(1, 0, 0), 
+mod_pills_final <- Arima(ts_pills_pre, 
+                         order = c(0, 0, 0), 
+                         seasonal = list(order = c(0, 1, 0), 
                                          period = 12),
+                         include.drift = TRUE,
                          method = 'ML')
 
 # Forecast values >= April 2019
@@ -178,46 +190,55 @@ ts_dose <- ts(data$dose_total/1e6, # Divide by 1,000,000 otherwise auto.arima ca
               start = c(2017, 4),
               end = c(2021, 3))
 
+ts_dose_pre <- window(ts_dose, end = c(2019, 3))
+
 #-- Plot time series --#
-plot(ts_dose, 
+plot(ts_dose_pre, 
      ylab = 'dose (1e6)')
 
 #-- Check whether stationary --#
 # Significant outcome indicates stationary time series
 # Augmented Dickey-Fuller Test
-adf.test(ts_dose) 
+adf.test(ts_dose_pre) 
 
 #-- Check whether seasonal --#
 # ETS interpretation: Error, Trend, Seasonal components
 # Looking to see whether Seasonal component is: 
 # 'None; N', 'Additive; A', or 'Multiplicative; M'
-ets(ts_dose)
+ets(ts_dose_pre)
 
-# Double-check seasonality with ACF and PACF
-acf(ts_dose, lag.max = 24)
-
-pacf(ts_dose, lag.max = 24)
-
-#-- Construct variables for ramp and step change at April 2019 --#
-# See 'Monthly number of prescription items' above
+# Double-check seasonality with ACF
+acf(ts_dose_pre, lag.max = 12)
 
 #-- Search for best model --#
 # Auto build model
-mod_dose_auto <- auto.arima(y = ts_dose,
-                            xreg = cbind(ramped, stepped), # predictors of y
-                            stationary = FALSE, # Based on ADF test
-                            seasonal = TRUE, # Possible seasonal component based on ACF
+mod_dose_auto <- auto.arima(y = ts_dose_pre,
+                            stationary = FALSE,
+                            seasonal = FALSE,
                             stepwise = FALSE,
-                            trace = TRUE)
-# Check residuals
-checkresiduals(mod_dose_auto, lag = 24)
+                            trace = TRUE,
+                            method = 'CSS-ML')
+
+mod_dose_auto2 <- auto.arima(y = ts_dose_pre,
+                             stationary = FALSE,
+                             D = 1, # Force seasonal component
+                             stepwise = FALSE,
+                             trace = TRUE,
+                             method = 'CSS-ML')
+
+mod_dose_auto
+mod_dose_auto2 # Model with seasonal component has a better fit based on AIC
+
+# Check residuals (LB test null = no autocorrelation)
+checkresiduals(mod_dose_auto2)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
-mod_dose_final <- Arima(window(ts_dose, end = c(2019, 3)), 
-                         order = c(3, 0, 0), 
-                         seasonal = list(order = c(1, 0, 0), 
+mod_dose_final <- Arima(ts_dose_pre, 
+                        order = c(0, 0, 0), 
+                        seasonal = list(order = c(0, 1, 0), 
                                          period = 12),
+                        include.drift = TRUE,
                         method = 'ML')
 
 # Forecast values >= April 2019
@@ -246,45 +267,55 @@ ts_dose2 <- ts(data$dose_per_prescription_total,
                start = c(2017, 4),
                end = c(2021, 3))
 
+ts_dose2_pre <- window(ts_dose2, end = c(2019, 3))
+
 #-- Plot time series --#
-plot(ts_dose2)
+plot(ts_dose2_pre)
 
 #-- Check whether stationary --#
 # Significant outcome indicates stationary time series
 # Augmented Dickey-Fuller Test
-adf.test(ts_dose2) 
+adf.test(ts_dose2_pre) 
 
 #-- Check whether seasonal --#
 # ETS interpretation: Error, Trend, Seasonal components
 # Looking to see whether Seasonal component is: 
 # 'None; N', 'Additive; A', or 'Multiplicative; M'
-ets(ts_dose2)
+ets(ts_dose2_pre)
 
-# Double-check seasonality with ACF and PACF
-acf(ts_dose2, lag.max = 24)
-
-pacf(ts_dose2, lag.max = 24)
-
-#-- Construct variables for ramp and step change at April 2019 --#
-# See 'Monthly number of prescription items' above
+# Double-check seasonality with ACF
+acf(ts_dose2_pre, lag.max = 12)
 
 #-- Search for best model --#
 # Auto build model
-mod_dose2_auto <- auto.arima(y = ts_dose2,
-                             xreg = cbind(ramped, stepped), # predictors of y
-                             stationary = FALSE, # Based on ADF test
-                             seasonal = TRUE, # Possible seasonal component based on ACF
+mod_dose2_auto <- auto.arima(y = ts_dose2_pre,
+                             stationary = FALSE,
+                             seasonal = FALSE,
                              stepwise = FALSE,
-                             trace = TRUE)
-# Check residuals
-checkresiduals(mod_dose2_auto, lag = 24)
+                             trace = TRUE,
+                             method = 'CSS-ML')
+
+mod_dose2_auto2 <- auto.arima(y = ts_dose2_pre,
+                              stationary = FALSE,
+                              D = 1, # Force seasonal component
+                              stepwise = FALSE,
+                              trace = TRUE,
+                              method = 'CSS-ML')
+
+mod_dose2_auto
+mod_dose2_auto2 # Model with seasonal component has a better fit based on AIC
+
+# Check residuals (LB test null = no autocorrelation)
+## Repeat auto.arima until LB test comes back not significant
+checkresiduals(mod_dose2_auto2)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
-mod_dose2_final <- Arima(window(ts_dose2, end = c(2019, 3)), 
-                          order = c(0, 1, 1), 
-                          seasonal = list(order = c(0, 0, 0), 
-                                          period = 12),
+mod_dose2_final <- Arima(ts_dose2_pre, 
+                         order = c(0, 0, 0), 
+                         seasonal = list(order = c(0, 1, 0), 
+                                         period = 12),
+                         include.drift = TRUE, 
                          method = 'ML')
 
 # Forecast values >= April 2019
@@ -339,7 +370,7 @@ plot_prescriptions <- ggplot(data = data_5) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = expression('ARIMA(2,1,0)(1,0,0)'[12]),
+    labs(title = expression('ARIMA(0,0,0)(0,1,0)'[12]~'with drift'),
          y = expression('Number of prescription items (10'^4*')'),
          x = 'Date') +
     scale_y_continuous(limits = c(40, 80)) +
@@ -363,25 +394,17 @@ plot_dose <- ggplot(data = data_5) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = expression('ARIMA(0,1,1)(0,0,0)'[12]),
+    labs(title = expression('ARIMA(0,0,0)(0,1,0)'[12]~'wth drift'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
-    scale_y_continuous(limits = c(6, 6.5)) +
+    scale_y_continuous(limits = c(5.95, 6.6)) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
                                   'April 2020', 'April 2021')) +
     theme(plot.margin = margin(t = 5.5, r = 50, b = 5.5, l = 20)); plot_dose
 
-# Plots without x-axis text
-# plot_prescriptions_2 <- plot_prescriptions +
-#     theme(axis.text.x = element_blank(),
-#           axis.title.x = element_blank())
-# 
-# plot_dose_2 <- plot_dose +
-#     theme(axis.text.x = element_blank(),
-#           axis.title.x = element_blank())
-
+# Group plots
 plot_patchwork <- plot_prescriptions + plot_dose + plot_layout(ncol = 2)
 
 ggsave(plot = plot_patchwork,
