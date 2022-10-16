@@ -605,7 +605,7 @@ plot_dose_simple <- ggplot(data = fitted_dose_simple) +
     labs(title = paste0('Simple (AICc =  ', round(AICc(dose_simple), 2), ')'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
-    scale_y_continuous(limits = c(5.95, 6.6)) +
+    scale_y_continuous(limits = c(5.9, 6.6)) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
@@ -647,7 +647,7 @@ plot_dose_spline <- ggplot(data = fitted_dose_spline) +
     labs(title = paste0('Spline (knots = 1) (AICc =  ', round(AICc(dose_spline), 2), ')'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
-    scale_y_continuous(limits = c(5.95, 6.6)) +
+    scale_y_continuous(limits = c(5.9, 6.6)) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
@@ -688,7 +688,7 @@ plot_dose_parallel <- ggplot(data = fitted_dose_parallel) +
     labs(title = paste0('Parallel slopes (AICc =  ', round(AICc(dose_parallel), 2), ')'),
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
-    scale_y_continuous(limits = c(5.95, 6.6)) +
+    scale_y_continuous(limits = c(5.9, 6.6)) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
