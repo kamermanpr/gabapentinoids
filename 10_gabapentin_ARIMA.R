@@ -60,32 +60,23 @@ acf(ts_prescription_pre, lag.max = 12)
 #-- Search for best model --#
 # Auto build model
 mod_prescription_auto <- auto.arima(y = ts_prescription_pre,
-                                    stationary = TRUE,
-                                    seasonal = FALSE,
+                                    stationary = FALSE, # Based on ADF test
+                                    seasonal = FALSE, # Based on ETS and ACF
                                     stepwise = FALSE,
                                     trace = TRUE,
                                     method = 'CSS-ML')
 
-mod_prescription_auto2 <- auto.arima(y = ts_prescription_pre,
-                                     stationary = FALSE,
-                                     D = 1, # Force seasonal component
-                                     stepwise = FALSE,
-                                     trace = TRUE,
-                                     method = 'CSS-ML')
-
 mod_prescription_auto
-mod_prescription_auto2 # Model with seasonal component has a better fit based on AIC
 
 # Check residuals (LB test null = no autocorrelation)
-## Repeat auto.arima until LB test comes back not significant
-checkresiduals(mod_prescription_auto2)
+checkresiduals(mod_prescription_auto)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
 mod_prescription_final <- Arima(ts_prescription_pre, 
                                 order = c(0, 0, 0), 
-                                seasonal = list(order = c(0, 1, 0), 
-                                                period = 12),
+                                seasonal = c(0, 0, 0),
+                                include.mean = TRUE,
                                 method = 'ML')
 
 # Forecast values >= April 2019
@@ -136,31 +127,22 @@ acf(ts_pills_pre, lag.max = 12)
 # Auto build model
 mod_pills_auto <- auto.arima(y = ts_pills_pre,
                              stationary = FALSE, # Based on ADF test
-                             seasonal = FALSE,
+                             seasonal = FALSE, # Based on ETS and ACF
                              stepwise = FALSE,
                              trace = TRUE,
                              method = 'CSS-ML')
 
-mod_pills_auto2 <- auto.arima(y = ts_pills_pre,
-                              stationary = FALSE,
-                              D = 1, # Force seasonal component
-                              stepwise = FALSE,
-                              trace = TRUE,
-                              method = 'CSS-ML')
-
 mod_pills_auto
-mod_pills_auto2 # Model with seasonal component has a better fit based on AIC
 
 # Check residuals (LB test null = no autocorrelation)
 ## Repeat auto.arima until LB test comes back not significant
-checkresiduals(mod_pills_auto2)
+checkresiduals(mod_pills_auto)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
 mod_pills_final <- Arima(ts_pills_pre, 
                          order = c(0, 0, 0), 
-                         seasonal = list(order = c(0, 1, 0), 
-                                         period = 12),
+                         seasonal = c(0, 0, 0),
                          method = 'ML')
 
 # Forecast values >= April 2019
@@ -212,30 +194,21 @@ acf(ts_dose_pre, lag.max = 12)
 # Auto build model
 mod_dose_auto <- auto.arima(y = ts_dose_pre,
                             stationary = FALSE, # Based on ADF test
-                            seasonal = FALSE,
+                            seasonal = FALSE, # Based on ETS and ACF
                             stepwise = FALSE,
                             trace = TRUE,
-                            method = 'CSS')
-
-mod_dose_auto2 <- auto.arima(y = ts_dose_pre,
-                             stationary = FALSE, # Based on ADF test
-                             D = 1, # Force seasonal component
-                             stepwise = FALSE,
-                             trace = TRUE,
-                             method = 'CSS') # Change to 'CSS' otherwise residuals are autocorrelated
+                            method = 'CSS-ML')
 
 mod_dose_auto
-mod_dose_auto2 # Model with seasonal component has a better fit based on AIC
 
 # Check residuals (LB test null = no autocorrelation)
-checkresiduals(mod_dose_auto2)
+checkresiduals(mod_dose_auto)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
 mod_dose_final <- Arima(ts_dose_pre, 
-                        order = c(2, 1, 0), 
-                        seasonal = list(order = c(0, 1, 0), 
-                                         period = 12),
+                        order = c(0, 0, 0), 
+                        seasonal = c(0, 0, 0),
                         method = 'ML')
 
 # Forecast values >= April 2019
@@ -287,31 +260,23 @@ acf(ts_dose2_pre, lag.max = 12)
 # Auto build model
 mod_dose2_auto <- auto.arima(y = ts_dose2_pre,
                              stationary = FALSE, # Based on ADF test
-                             seasonal = FALSE,
+                             seasonal = FALSE, # Based on ETS and ACF
                              stepwise = FALSE,
                              trace = TRUE,
                              method = 'CSS-ML')
 
-mod_dose2_auto2 <- auto.arima(y = ts_dose2_pre,
-                              stationary = FALSE, # Based on ADF test
-                              D = 1, # Force seasonal component
-                              stepwise = FALSE,
-                              trace = TRUE,
-                              method = 'CSS-ML')
-
 mod_dose2_auto
-mod_dose2_auto2 # Model with seasonal component has a better fit based on AIC
 
 # Check residuals (LB test null = no autocorrelation)
 ## Repeat auto.arima until LB test comes back not significant
-checkresiduals(mod_dose2_auto2)
+checkresiduals(mod_dose2_auto)
 
 #-- Final step --#
 # Build model pre-April 2019 using seasonal and non-seasonal components identified in automated search
 mod_dose2_final <- Arima(ts_dose2_pre, 
-                         order = c(0, 1, 0), 
-                         seasonal = list(order = c(0, 1, 0), 
-                                         period = 12))
+                         order = c(0, 1, 1), 
+                         seasonal = c(0, 0, 0),
+                         method = 'ML')
 
 # Forecast values >= April 2019
 forecast_dose2 <- forecast(mod_dose2_final, 
@@ -368,7 +333,7 @@ plot_prescriptions <- ggplot(data = data_5) +
     labs(title = expression('ARIMA(0,0,0) with non-zero mean'),
          y = expression('Number of prescription items (10'^4*')'),
          x = 'Date') +
-    scale_y_continuous(limits = c(48, 72)) +
+    scale_y_continuous(limits = c(48, 70)) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
@@ -389,10 +354,11 @@ plot_dose <- ggplot(data = data_5) +
               size = 1) +
     geom_vline(xintercept = 25,
                linetype = 2) +
-    labs(title = expression('ARIMA(0,1,0)(0,1,0)'[12]),
+    labs(title = 'ARIMA(0,1,1)',
          y = expression('Dose per prescription item (10'^3*' mg)'),
          x = 'Date') +
-    scale_y_continuous(limits = c(27, 30)) +
+    scale_y_continuous(limits = c(27.5, 30),
+                       breaks = c(28, 29, 30)) +
     scale_x_continuous(breaks = c(1, 13, 25, 37, 49),
                        labels = c('April 2017', 'April 2018', 
                                   'April 2019', 
