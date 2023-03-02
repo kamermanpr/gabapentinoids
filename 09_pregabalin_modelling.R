@@ -80,6 +80,9 @@ data <- pregabalin %>%
 prescriptions_simple <- lm(prescriptions_total ~ month, 
                            data = data)
 
+# Check for autocorrelation
+acf(prescriptions_simple$residuals)
+
 # Inspect model coefficients
 tidy(prescriptions_simple, conf.int = TRUE)
 
@@ -122,6 +125,9 @@ prescriptions_spline <- lm(prescriptions_total ~ lspline(x = month,
                                                          marginal = FALSE), 
                            data = data)
 
+# Check for autocorrelation
+acf(prescriptions_spline$residuals)
+
 # Inspect model coefficients
 tidy(prescriptions_spline, conf.int = TRUE)
 
@@ -161,6 +167,9 @@ plot_prescriptions_spline <- ggplot(data = fitted_prescriptions_spline) +
 # Generate model
 prescriptions_parallel <- lm(prescriptions_total ~ month + period,
                              data = data)
+
+# Check for autocorrelation
+acf(prescriptions_parallel$residuals)
 
 # Inspect model coefficients 
 # Extremely high upper limit to CI, use boot method
@@ -249,6 +258,9 @@ evidence_weight(x = vec_rl,
 pills_simple <- lm(pills_total ~ month, 
                    data = data)
 
+# Check for autocorrelation
+acf(pills_simple$residuals)
+
 # Inspect model coefficients
 tidy(pills_simple, conf.int = TRUE)
 
@@ -291,6 +303,9 @@ pills_spline <- lm(pills_total ~ lspline(x = month,
                                          marginal = FALSE), 
                    data = data)
 
+# Check for autocorrelation
+acf(pills_spline$residuals)
+
 # Inspect model coefficients
 tidy(pills_spline, conf.int = TRUE)
 
@@ -330,6 +345,9 @@ plot_pills_spline <- ggplot(data = fitted_pills_spline) +
 # Generate model
 pills_parallel <- lm(pills_total ~ month + period,
                      data = data)
+
+# Check for autocorrelation
+acf(pills_parallel$residuals)
 
 # Inspect model coefficients
 tidy(pills_parallel, conf.int = TRUE)
@@ -414,6 +432,9 @@ evidence_weight(x = vec_rl,
 quantity_simple <- lm(dose_total ~ month, 
                       data = data)
 
+# Check for autocorrelation
+acf(quantity_simple$residuals)
+
 # Inspect model coefficients
 tidy(quantity_simple, conf.int = TRUE)
 
@@ -456,6 +477,9 @@ quantity_spline <- lm(dose_total ~ lspline(x = month,
                                            marginal = FALSE), 
                       data = data)
 
+# Check for autocorrelation
+acf(quantity_spline$residuals)
+
 # Inspect model coefficients
 tidy(quantity_spline, conf.int = TRUE)
 
@@ -495,6 +519,9 @@ plot_quantity_spline <- ggplot(data = fitted_quantity_spline) +
 # Generate model
 quantity_parallel <- lm(dose_total ~ month + period,
                         data = data)
+
+# Check for autocorrelation
+acf(quantity_parallel$residuals)
 
 # Inspect model coefficients
 tidy(quantity_parallel, conf.int = TRUE)
@@ -579,6 +606,9 @@ evidence_weight(x = vec_rl,
 dose_simple <- lm(dose_per_prescription_total ~ month, 
                   data = data)
 
+# Check for autocorrelation
+acf(dose_simple$residuals) # Caution autocorrelation present
+
 # Inspect model coefficients
 tidy(dose_simple, conf.int = TRUE)
 
@@ -621,6 +651,9 @@ dose_spline <- lm(dose_per_prescription_total ~ lspline(x = month,
                                                         marginal = FALSE), 
                   data = data)
 
+# Check for autocorrelation
+acf(dose_spline$residuals) # Caution autocorrelation present
+
 # Inspect model coefficients
 tidy(dose_spline, conf.int = TRUE)
 
@@ -660,6 +693,9 @@ plot_dose_spline <- ggplot(data = fitted_dose_spline) +
 # Generate model
 dose_parallel <- lm(dose_per_prescription_total ~ month + period,
                     data = data)
+
+# Check for autocorrelation
+acf(dose_parallel$residuals) # Caution autocorrelation present
 
 # Inspect model coefficients
 tidy(dose_parallel, conf.int = TRUE)
